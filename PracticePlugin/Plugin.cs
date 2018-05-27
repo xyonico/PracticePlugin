@@ -13,15 +13,47 @@ namespace PracticePlugin
 {
 	public class Plugin : IPlugin
 	{
-		public static float TimeScale = 1;
 		public static GameObject SettingsObject;
+
+		public static float TimeScale
+		{
+			get { return _timeScale; }
+			set
+			{
+				_timeScale = value;
+				if (_songAudio != null)
+				{
+					_songAudio.pitch = _timeScale;
+				}
+
+				if (_noteCutAudioSource != null)
+				{
+					_noteCutAudioSource.pitch = _timeScale;
+				}
+			}
+		}
+		private static float _timeScale = 1;
+
+		public static bool Enabled
+		{
+			get { return _enabled; }
+			set
+			{
+				_enabled = value;
+				if (!_enabled)
+				{
+					TimeScale = 1;
+				}
+			}
+		}
+
+		private static bool _enabled;
 		
-		private bool _enabled;
 		private bool _init;
 		private MainGameSceneSetupData _mainGameSceneSetupData;
 		private AudioTimeSyncController _audioTimeSync;
-		private AudioSource _songAudio;
-		private AudioSource _noteCutAudioSource;
+		private static AudioSource _songAudio;
+		private static AudioSource _noteCutAudioSource;
 		private string _lastLevelId;
 		
 		public string Name
@@ -31,7 +63,7 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v1.0"; }
+			get { return "v1.1"; }
 		}
 		
 		public void OnApplicationStart()
@@ -87,7 +119,7 @@ namespace PracticePlugin
 				_audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
 				_audioTimeSync.forcedAudioSync = true;
 				_songAudio = ReflectionUtil.GetPrivateField<AudioSource>(_audioTimeSync, "_audioSource");
-				_enabled = _mainGameSceneSetupData.gameplayOptions.noEnergy;
+				Enabled = _mainGameSceneSetupData.gameplayOptions.noEnergy;
 				var noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>().FirstOrDefault();
 				var noteCutSoundEffect =
 					ReflectionUtil.GetPrivateField<NoteCutSoundEffect>(noteCutSoundEffectManager, "_noteCutSoundEffectPrefab");
@@ -97,6 +129,7 @@ namespace PracticePlugin
 				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>().FirstOrDefault(x => x.name == "Buttons")
 					.transform.parent;
 				canvas.gameObject.AddComponent<SpeedSettingsCreator>();
+				TimeScale = TimeScale;
 			}
 		}
 
@@ -112,14 +145,7 @@ namespace PracticePlugin
 
 		public void OnUpdate()
 		{
-			if (_songAudio == null) return;
-			if (!_enabled)
-			{
-				TimeScale = 1;
-			}
-
-			_noteCutAudioSource.pitch = TimeScale;
-			_songAudio.pitch = TimeScale;
+			
 		}
 
 		public void OnFixedUpdate()

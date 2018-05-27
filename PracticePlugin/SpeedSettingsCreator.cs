@@ -9,6 +9,7 @@ namespace PracticePlugin
 		
 		private void OnEnable()
 		{
+			if (!Plugin.Enabled) return;
 			_speedSettings = Instantiate(Plugin.SettingsObject, transform);
 			_speedSettings.SetActive(true);
 			_speedSettings.GetComponent<SpeedSettingsController>().Init();
@@ -20,6 +21,7 @@ namespace PracticePlugin
 
 		private void OnDisable()
 		{
+			if (_speedSettings == null) return;
 			DestroyImmediate(_speedSettings);
 		}
 	}
