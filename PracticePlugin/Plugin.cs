@@ -193,6 +193,7 @@ namespace PracticePlugin
                 // Hack to ensure score is applied on rewind
                 // prevFrameScore is applied on LateUpdate and the score will sometimes not be applied when rewinding.
                 // This just applies the score again on the next frame to make sure that it changes.
+                // May not be required
                 if (applyScoreAgain)
                 {
                     RewindScore(currentBeat);
@@ -234,6 +235,7 @@ namespace PracticePlugin
         {
             ScoreListItem scoreListItem;
             
+            // Loop through and log the data for all scores saved in the scoresDict
             String message = "\n";
             foreach (int key in scoresDict.Keys)
             {
@@ -252,8 +254,9 @@ namespace PracticePlugin
 
             Log(message);
 
-            // Reset score to where it was at destination
+            // Get the score at the destination beat
             scoreListItem = scoresDict[destinationBeat];
+            
             Log("destinationBeat: " + destinationBeat
                 +  " scoreListItem baseScore:" + scoreListItem.baseScore
                 + " previousScore:" + scoreListItem.previousScore
@@ -265,9 +268,9 @@ namespace PracticePlugin
                 + " playerHeadWasInObstacle:" + scoreListItem.playerHeadWasInObstacle
                 + "\n");
 
-            // Get the score data at the new position
+            // Get the score data at the destination beat
             ReflectionUtil.SetPrivateField(scoreController, "_baseScore", scoreListItem.baseScore);
-            ReflectionUtil.SetPrivateField(scoreController, "_prevFrameScore", -1); // <-------------------------------- Trying to force scoreDidChangeEvent
+            ReflectionUtil.SetPrivateField(scoreController, "_prevFrameScore", scoreListItem.previousScore); // <-------- Trying to force scoreDidChangeEvent
             ReflectionUtil.SetPrivateField(scoreController, "_multiplier", scoreListItem.multiplier);
             ReflectionUtil.SetPrivateField(scoreController, "_multiplierIncreaseProgress", scoreListItem.multiplierIncreaseProgress);
             ReflectionUtil.SetPrivateField(scoreController, "_multiplierIncreaseMaxProgress", scoreListItem.multiplierIncreaseMaxProgress);
@@ -276,7 +279,7 @@ namespace PracticePlugin
             ReflectionUtil.SetPrivateField(scoreController, "_playerHeadWasInObstacle", scoreListItem.playerHeadWasInObstacle);
             ReflectionUtil.SetPrivateField(scoreController, "_afterCutScoreBuffers", scoreListItem.afterCutScoreBuffers);
 
-            // Trigger the scoreController's late update to
+            // Trigger the scoreController's late update to unsure a scoreDidChangeEvent
             scoreController.LateUpdate();
         }
         
