@@ -9,11 +9,12 @@ namespace PracticePlugin
 		public static void SetPrivateField(object obj, string fieldName, object value)
 		{
 			var prop = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-			prop.SetValue(obj, value);
+            prop.SetValue(obj, value);
 		}
 		
 		public static T GetPrivateField<T>(object obj, string fieldName)
 		{
+            //Plugin.Log("GetPrivateField : " + obj.ToString() + " fieldName: " + fieldName);
 			var prop = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
 			var value = prop.GetValue(obj);
 			return (T) value;

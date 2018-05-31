@@ -4,10 +4,10 @@ using UnityEngine;
 namespace PracticePlugin
 {
 	public class SpeedSettingsCreator : MonoBehaviour
-	{
-		private GameObject _speedSettings;
-		
-		private void OnEnable()
+    {
+        private GameObject _speedSettings;
+
+        private void OnEnable()
 		{
 			if (!Plugin.Enabled) return;
 			_speedSettings = Instantiate(Plugin.SettingsObject, transform);
