@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PracticePlugin
 {
@@ -9,7 +8,6 @@ namespace PracticePlugin
 		
 		private void OnEnable()
 		{
-			if (!Plugin.Enabled) return;
 			_speedSettings = Instantiate(Plugin.SettingsObject, transform);
 			_speedSettings.SetActive(true);
 			_speedSettings.GetComponent<SpeedSettingsController>().Init();

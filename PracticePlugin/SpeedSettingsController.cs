@@ -1,20 +1,17 @@
-﻿using System;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 namespace PracticePlugin
 {
 	public class SpeedSettingsController : ListSettingsController
 	{
-		private const float MaxSize = 5f;
-		private const float StepSize = 0.05f;
+
+		private int _indexOffset;
 		
 		protected override void GetInitValues(out int idx, out int numberOfElements)
 		{
-			numberOfElements = Mathf.RoundToInt(MaxSize / StepSize);
-			idx = Mathf.RoundToInt(Plugin.TimeScale / StepSize) - 1;
+			_indexOffset = Plugin.NoFail ? 1 : 20;
+			numberOfElements = Mathf.RoundToInt(Plugin.MaxSize / Plugin.StepSize) - _indexOffset;
+			idx = Mathf.RoundToInt(Plugin.TimeScale / Plugin.StepSize) - _indexOffset;
 		}
 
 		protected override void ApplyValue(int idx)
@@ -23,8 +20,8 @@ namespace PracticePlugin
 
 		protected override string TextForValue(int idx)
 		{
-			Plugin.TimeScale = StepSize * (idx + 1);
-			return StepSize * 100f * (idx + 1) + "%";
+			Plugin.TimeScale = Plugin.StepSize * (idx + _indexOffset);
+			return Plugin.StepSize * 100f * (idx + _indexOffset) + "%";
 		}
 	}
 }

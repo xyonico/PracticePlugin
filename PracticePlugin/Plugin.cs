@@ -1,18 +1,19 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using IllusionPlugin;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.XR;
 using Object = UnityEngine.Object;
 
 namespace PracticePlugin
 {
 	public class Plugin : IPlugin
 	{
+		public const float MaxSize = 5f;
+		public const float StepSize = 0.05f;
+		
 		public static GameObject SettingsObject;
 
 		public static float TimeScale
@@ -34,20 +35,7 @@ namespace PracticePlugin
 		}
 		private static float _timeScale = 1;
 
-		public static bool Enabled
-		{
-			get { return _enabled; }
-			set
-			{
-				_enabled = value;
-				if (!_enabled)
-				{
-					TimeScale = 1;
-				}
-			}
-		}
-
-		private static bool _enabled;
+		public static bool NoFail { get; private set; }
 		
 		private bool _init;
 		private MainGameSceneSetupData _mainGameSceneSetupData;
@@ -63,7 +51,7 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v1.1"; }
+			get { return "v2.0"; }
 		}
 		
 		public void OnApplicationStart()
@@ -90,7 +78,7 @@ namespace PracticePlugin
 					SettingsObject.SetActive(false);
 					volumeSettings.gameObject.SetActive(true);
 					var volume = SettingsObject.GetComponent<VolumeSettingsController>();
-					ReflectionUtil.CopyComponent(volume, typeof(SimpleSettingsController), typeof(SpeedSettingsController), SettingsObject);
+					ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController), typeof(SpeedSettingsController), SettingsObject);
 					Object.DestroyImmediate(volume);
 					SettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
 					Object.DontDestroyOnLoad(SettingsObject);
@@ -103,34 +91,41 @@ namespace PracticePlugin
 					_mainGameSceneSetupData = Resources.FindObjectsOfTypeAll<MainGameSceneSetupData>().FirstOrDefault();
 				}
 				
-				if (_mainGameSceneSetupData == null || scene.buildIndex != 4)
+				if (_mainGameSceneSetupData == null || scene.buildIndex != 5)
 				{
 					return;
 				}
 
-				if (_lastLevelId != _mainGameSceneSetupData.levelId && !string.IsNullOrEmpty(_lastLevelId))
+				if (_lastLevelId != _mainGameSceneSetupData.difficultyLevel.level.levelID && !string.IsNullOrEmpty(_lastLevelId))
 				{
 					TimeScale = 1;
-					_lastLevelId = _mainGameSceneSetupData.levelId;
+					_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
 				}
 
-				_lastLevelId = _mainGameSceneSetupData.levelId;
+				_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
 				
 				_audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
 				_audioTimeSync.forcedAudioSync = true;
 				_songAudio = ReflectionUtil.GetPrivateField<AudioSource>(_audioTimeSync, "_audioSource");
-				Enabled = _mainGameSceneSetupData.gameplayOptions.noEnergy;
-				var noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>().FirstOrDefault();
-				var noteCutSoundEffect =
-					ReflectionUtil.GetPrivateField<NoteCutSoundEffect>(noteCutSoundEffectManager, "_noteCutSoundEffectPrefab");
-				_noteCutAudioSource =
-					ReflectionUtil.GetPrivateField<AudioSource>(noteCutSoundEffect, "_audioSource");
+				NoFail = !_mainGameSceneSetupData.gameplayOptions.validForScoreUse;
+				
+				if (!NoFail)
+				{
+					TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
+				}
+				
+				NoteHitPitchChanger.ReplacePrefab();
 
 				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>().FirstOrDefault(x => x.name == "Buttons")
 					.transform.parent;
 				canvas.gameObject.AddComponent<SpeedSettingsCreator>();
 				TimeScale = TimeScale;
 			}
+		}
+
+		private void ScoreControllerOnNoteWasCutEvent(NoteData arg1, NoteCutInfo arg2, int arg3)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void OnLevelWasLoaded(int level)
