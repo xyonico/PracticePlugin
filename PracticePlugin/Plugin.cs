@@ -11,9 +11,19 @@ namespace PracticePlugin
 {
 	public class Plugin : IPlugin
 	{
+		public string Name
+		{
+			get { return "Practice Plugin"; }
+		}
+
+		public string Version
+		{
+			get { return "v2.1"; }
+		}
+
 		public const float MaxSize = 5f;
 		public const float StepSize = 0.05f;
-		
+
 		public static GameObject SettingsObject;
 
 		public static float TimeScale
@@ -22,38 +32,44 @@ namespace PracticePlugin
 			set
 			{
 				_timeScale = value;
+				if (!IsEqualToOne(_timeScale))
+				{
+					HasTimeScaleChanged = true;
+
+					if (_audioTimeSync != null)
+					{
+						_audioTimeSync.forcedAudioSync = true;
+					}
+				}
+				else
+				{
+					if (_audioTimeSync != null)
+					{
+						_audioTimeSync.forcedAudioSync = false;
+					}
+				}
+
 				if (_songAudio != null)
 				{
 					_songAudio.pitch = _timeScale;
 				}
-
-				if (_noteCutAudioSource != null)
-				{
-					_noteCutAudioSource.pitch = _timeScale;
-				}
 			}
 		}
+
 		private static float _timeScale = 1;
 
 		public static bool NoFail { get; private set; }
-		
-		private bool _init;
-		private MainGameSceneSetupData _mainGameSceneSetupData;
-		private AudioTimeSyncController _audioTimeSync;
-		private static AudioSource _songAudio;
-		private static AudioSource _noteCutAudioSource;
-		private string _lastLevelId;
-		
-		public string Name
-		{
-			get { return "Practice Plugin"; }
-		}
 
-		public string Version
-		{
-			get { return "v2.0"; }
-		}
-		
+		public static bool HasTimeScaleChanged { get; private set; }
+
+		private static bool _init;
+		private static MainGameSceneSetupData _mainGameSceneSetupData;
+		private static AudioTimeSyncController _audioTimeSync;
+		private static AudioSource _songAudio;
+		private static string _lastLevelId;
+		private static SpeedSettingsCreator _speedSettingsCreator;
+		private static bool _resetNoFail;
+
 		public void OnApplicationStart()
 		{
 			if (_init) return;
@@ -70,6 +86,13 @@ namespace PracticePlugin
 		{
 			if (scene.buildIndex == 1)
 			{
+				if (_resetNoFail)
+				{
+					var resultsViewController =
+						Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
+					resultsViewController.continueButtonPressedEvent += ResultsViewControllerOnContinueButtonPressedEvent;
+				}
+				
 				if (SettingsObject == null)
 				{
 					var volumeSettings = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
@@ -78,7 +101,8 @@ namespace PracticePlugin
 					SettingsObject.SetActive(false);
 					volumeSettings.gameObject.SetActive(true);
 					var volume = SettingsObject.GetComponent<VolumeSettingsController>();
-					ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController), typeof(SpeedSettingsController), SettingsObject);
+					ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController),
+						typeof(SpeedSettingsController), SettingsObject);
 					Object.DestroyImmediate(volume);
 					SettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
 					Object.DontDestroyOnLoad(SettingsObject);
@@ -89,63 +113,99 @@ namespace PracticePlugin
 				if (_mainGameSceneSetupData == null)
 				{
 					_mainGameSceneSetupData = Resources.FindObjectsOfTypeAll<MainGameSceneSetupData>().FirstOrDefault();
+					if (_mainGameSceneSetupData == null) return;
+					_mainGameSceneSetupData.didFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
 				}
-				
-				if (_mainGameSceneSetupData == null || scene.buildIndex != 5)
+
+				if (scene.buildIndex != 5)
 				{
 					return;
 				}
 
-				if (_lastLevelId != _mainGameSceneSetupData.difficultyLevel.level.levelID && !string.IsNullOrEmpty(_lastLevelId))
+				if (_lastLevelId != _mainGameSceneSetupData.difficultyLevel.level.levelID &&
+				    !string.IsNullOrEmpty(_lastLevelId))
 				{
+					HasTimeScaleChanged = false;
 					TimeScale = 1;
 					_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
 				}
 
+				if (IsEqualToOne(TimeScale))
+				{
+					HasTimeScaleChanged = false;
+				}
+
 				_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
-				
+
 				_audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
-				_audioTimeSync.forcedAudioSync = true;
-				_songAudio = ReflectionUtil.GetPrivateField<AudioSource>(_audioTimeSync, "_audioSource");
+				_songAudio = _audioTimeSync.GetPrivateField<AudioSource>("_audioSource");
 				NoFail = !_mainGameSceneSetupData.gameplayOptions.validForScoreUse;
-				
+
 				if (!NoFail)
 				{
 					TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
 				}
-				
+
 				NoteHitPitchChanger.ReplacePrefab();
 
-				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>().FirstOrDefault(x => x.name == "Buttons")
+				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
+					.FirstOrDefault(x => x.name == "Buttons")
 					.transform.parent;
-				canvas.gameObject.AddComponent<SpeedSettingsCreator>();
+				_speedSettingsCreator = canvas.gameObject.AddComponent<SpeedSettingsCreator>();
+				_speedSettingsCreator.ValueChangedEvent += SpeedSettingsCreatorOnValueChangedEvent;
 				TimeScale = TimeScale;
 			}
 		}
 
-		private void ScoreControllerOnNoteWasCutEvent(NoteData arg1, NoteCutInfo arg2, int arg3)
+		private void ResultsViewControllerOnContinueButtonPressedEvent(ResultsViewController obj)
 		{
-			throw new NotImplementedException();
+			PersistentSingleton<GameDataModel>.instance.gameDynamicData.GetCurrentPlayerDynamicData()
+				.gameplayOptions.noEnergy = false;
+		}
+
+		private void MainGameSceneSetupDataOnDidFinishEvent(MainGameSceneSetupData arg1, LevelCompletionResults results)
+		{
+			if (!NoFail && HasTimeScaleChanged && results != null &&
+			    results.levelEndStateType == LevelCompletionResults.LevelEndStateType.Cleared)
+			{
+				arg1.gameplayOptions.noEnergy = true;
+				_resetNoFail = true;
+			}
+		}
+
+		private void SpeedSettingsCreatorOnValueChangedEvent(float timeScale)
+		{
+			if (!IsEqualToOne(timeScale))
+			{
+				HasTimeScaleChanged = true;
+			}
+
+			TimeScale = timeScale;
+		}
+
+		private static bool IsEqualToOne(float value)
+		{
+			return Math.Abs(value - 1) < 0.000000001f;
 		}
 
 		public void OnLevelWasLoaded(int level)
 		{
-			
+
 		}
 
 		public void OnLevelWasInitialized(int level)
 		{
-			
+
 		}
 
 		public void OnUpdate()
 		{
-			
+
 		}
 
 		public void OnFixedUpdate()
 		{
-			
+
 		}
 	}
 }
