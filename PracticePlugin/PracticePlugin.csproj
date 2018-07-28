@@ -71,7 +71,7 @@
     <Compile Include="LooperCursor.cs" />
     <Compile Include="LooperUI.cs" />
     <Compile Include="NoFailGameEnergy.cs" />
-    <Compile Include="NoteHitPitchChanger.cs" />
+    <Compile Include="NoteCutSoundReplacer.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />

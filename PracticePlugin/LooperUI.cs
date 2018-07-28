@@ -73,7 +73,6 @@ namespace PracticePlugin
 			_startCursor = startCursorImage.gameObject.AddComponent<LooperCursor>();
 			_startCursor.BeginDragEvent += CursorOnBeginDragEvent;
 			_startCursor.EndDragEvent += CursorOnEndDragEvent;
-			Console.WriteLine("Set position to " + _prevStartTime);
 			_startCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevStartTime);
 			
 			var endCursorImage = new GameObject("End Cursor").AddComponent<Image>();

@@ -21,15 +21,15 @@ namespace PracticePlugin
 			get { return "v3.0"; }
 		}
 
-		public const float MaxSize = 5f;
+		public const float MaxSize = 5.05f;
 		public const float StepSize = 0.05f;
 
-		public static GameObject SettingsObject;
+		public static GameObject SettingsObject { get; private set; }
 
 		public static float TimeScale
 		{
 			get { return _timeScale; }
-			set
+			private set
 			{
 				_timeScale = value;
 				if (!IsEqualToOne(_timeScale))
@@ -92,23 +92,31 @@ namespace PracticePlugin
 				{
 					var resultsViewController =
 						Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
-					resultsViewController.continueButtonPressedEvent += ResultsViewControllerOnContinueButtonPressedEvent;
+					if (resultsViewController != null)
+						resultsViewController.continueButtonPressedEvent +=
+							ResultsViewControllerOnContinueButtonPressedEvent;
 				}
+
+				if (SettingsObject != null) return;
 				
-				if (SettingsObject == null)
-				{
-					var volumeSettings = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
-					volumeSettings.gameObject.SetActive(false);
-					SettingsObject = Object.Instantiate(volumeSettings.gameObject);
-					SettingsObject.SetActive(false);
-					volumeSettings.gameObject.SetActive(true);
-					var volume = SettingsObject.GetComponent<VolumeSettingsController>();
-					ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController),
-						typeof(SpeedSettingsController), SettingsObject);
-					Object.DestroyImmediate(volume);
-					SettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
-					Object.DontDestroyOnLoad(SettingsObject);
-				}
+				var volumeSettings = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
+				
+				if (volumeSettings == null) return;
+				
+				volumeSettings.gameObject.SetActive(false);
+				SettingsObject = Object.Instantiate(volumeSettings.gameObject);
+				SettingsObject.SetActive(false);
+				volumeSettings.gameObject.SetActive(true);
+
+				if (SettingsObject == null) return;
+				
+				var volume = SettingsObject.GetComponent<VolumeSettingsController>();
+				ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController),
+					typeof(SpeedSettingsController), SettingsObject);
+				Object.DestroyImmediate(volume);
+
+				SettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
+				Object.DontDestroyOnLoad(SettingsObject);
 			}
 			else
 			{
@@ -153,11 +161,14 @@ namespace PracticePlugin
 					TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
 				}
 
-				NoteHitPitchChanger.ReplacePrefab();
+				NoteCutSoundReplacer.ReplacePrefab();
 
 				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
 					.FirstOrDefault(x => x.name == "Buttons")
-					.transform.parent;
+					?.transform.parent;
+				
+				if (canvas == null) return;
+				
 				_uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
 				_uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
 				_uiElementsCreator.Init();

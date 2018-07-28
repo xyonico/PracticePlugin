@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace PracticePlugin
 {
-	public static class NoteHitPitchChanger
+	public static class NoteCutSoundReplacer
 	{
 		private static CustomNoteCutSoundEffect _noteCutSoundEffect;
 		
