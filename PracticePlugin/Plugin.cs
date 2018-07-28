@@ -18,7 +18,7 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v2.2"; }
+			get { return "v3.0"; }
 		}
 
 		public const float MaxSize = 5f;
@@ -61,6 +61,8 @@ namespace PracticePlugin
 		public static bool NoFail { get; private set; }
 
 		public static bool HasTimeScaleChanged { get; private set; }
+		
+		public static bool PlayingNewSong { get; private set; }
 
 		private static bool _init;
 		private static MainGameSceneSetupData _mainGameSceneSetupData;
@@ -125,9 +127,14 @@ namespace PracticePlugin
 				if (_lastLevelId != _mainGameSceneSetupData.difficultyLevel.level.levelID &&
 				    !string.IsNullOrEmpty(_lastLevelId))
 				{
+					PlayingNewSong = true;
 					HasTimeScaleChanged = false;
 					TimeScale = 1;
 					_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
+				}
+				else
+				{
+					PlayingNewSong = false;
 				}
 
 				if (IsEqualToOne(TimeScale))
@@ -153,6 +160,7 @@ namespace PracticePlugin
 					.transform.parent;
 				_uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
 				_uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
+				_uiElementsCreator.Init();
 				TimeScale = TimeScale;
 			}
 		}
@@ -200,7 +208,8 @@ namespace PracticePlugin
 
 		public void OnUpdate()
 		{
-
+			if (_uiElementsCreator == null || _uiElementsCreator.SongSeeker == null) return;
+			_uiElementsCreator.SongSeeker.OnUpdate();
 		}
 
 		public void OnFixedUpdate()

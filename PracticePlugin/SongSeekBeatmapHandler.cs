@@ -6,9 +6,7 @@ using UnityEngine;
 namespace PracticePlugin
 {
 	public static class SongSeekBeatmapHandler
-	{
-		private const float AheadTime = 1f;
-		
+	{	
 		private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> CallbackList
 		{
 			get
@@ -71,7 +69,7 @@ namespace PracticePlugin
 		
 		private static BeatmapData _beatmapData;
 
-		public static void OnSongTimeChanged(float newSongTime)
+		public static void OnSongTimeChanged(float newSongTime, float aheadTime)
 		{
 			foreach (var callbackData in CallbackList)
 			{
@@ -83,7 +81,7 @@ namespace PracticePlugin
 					{
 						var beatmapObjectData = _beatmapData.beatmapLinesData[i]
 							.beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
-						if (beatmapObjectData.time - AheadTime >= newSongTime)
+						if (beatmapObjectData.time - aheadTime >= newSongTime)
 						{
 							break;
 						}
