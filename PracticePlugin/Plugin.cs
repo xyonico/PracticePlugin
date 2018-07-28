@@ -67,7 +67,7 @@ namespace PracticePlugin
 		private static AudioTimeSyncController _audioTimeSync;
 		private static AudioSource _songAudio;
 		private static string _lastLevelId;
-		private static SpeedSettingsCreator _speedSettingsCreator;
+		private static UIElementsCreator _uiElementsCreator;
 		private static bool _resetNoFail;
 
 		public void OnApplicationStart()
@@ -151,8 +151,8 @@ namespace PracticePlugin
 				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
 					.FirstOrDefault(x => x.name == "Buttons")
 					.transform.parent;
-				_speedSettingsCreator = canvas.gameObject.AddComponent<SpeedSettingsCreator>();
-				_speedSettingsCreator.ValueChangedEvent += SpeedSettingsCreatorOnValueChangedEvent;
+				_uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
+				_uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
 				TimeScale = TimeScale;
 			}
 		}
@@ -173,7 +173,7 @@ namespace PracticePlugin
 			}
 		}
 
-		private void SpeedSettingsCreatorOnValueChangedEvent(float timeScale)
+		private void UIElementsCreatorOnValueChangedEvent(float timeScale)
 		{
 			if (!IsEqualToOne(timeScale))
 			{

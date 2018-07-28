@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace PracticePlugin
 {
-	public class SpeedSettingsCreator : MonoBehaviour
+	public class UIElementsCreator : MonoBehaviour
 	{
 		public event Action<float> ValueChangedEvent;
 		
 		private GameObject _speedSettings;
 		private TMP_Text _leaderboardText;
 		private float _newTimeScale = 1;
-		
-		private void OnEnable()
+
+		private void Awake()
 		{
 			_leaderboardText = new GameObject("Leaderboard Text").AddComponent<TextMeshProUGUI>();
 			var rectTransform = (RectTransform) _leaderboardText.transform;
@@ -27,11 +27,14 @@ namespace PracticePlugin
 			{
 				_leaderboardText.text = "Leaderboard has been disabled\nSet speed to 100% and restart to enable again";
 			}
-			
+		}
+		
+		private void OnEnable()
+		{	
 			_speedSettings = Instantiate(Plugin.SettingsObject, transform);
 			_speedSettings.SetActive(true);
 			
-			rectTransform = (RectTransform) _speedSettings.transform;
+			var rectTransform = (RectTransform) _speedSettings.transform;
 			rectTransform.anchorMin = Vector2.right * 0.5f;
 			rectTransform.anchorMax = Vector2.right * 0.5f;
 			rectTransform.anchoredPosition = new Vector2(0, rectTransform.sizeDelta.y * 1.5f);
@@ -47,7 +50,6 @@ namespace PracticePlugin
 			{
 				ValueChangedEvent(_newTimeScale);
 			}
-			DestroyImmediate(_leaderboardText);
 			DestroyImmediate(_speedSettings);
 		}
 
@@ -60,7 +62,7 @@ namespace PracticePlugin
 			}
 			else
 			{
-				_leaderboardText.text = Plugin.HasTimeScaleChanged ? "Leaderboard has been disabled\nSet speed to 100% and restart to enable again" : string.Empty;
+				_leaderboardText.text = Plugin.HasTimeScaleChanged && !Plugin.NoFail ? "Leaderboard has been disabled\nSet speed to 100% and restart to enable again" : string.Empty;
 			}
 		}
 	}
