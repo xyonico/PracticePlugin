@@ -23,12 +23,18 @@ namespace PracticePlugin
 			rectTransform.anchoredPosition = new Vector2(0, 15);
 			_leaderboardText.fontSize = 4f;
 			_leaderboardText.alignment = TextAlignmentOptions.Center;
+			
 			if (Plugin.HasTimeScaleChanged && !Plugin.NoFail)
 			{
 				_leaderboardText.text = "Leaderboard has been disabled\nSet speed to 100% and restart to enable again";
 			}
+
+			var seekerObj = new GameObject("Song Seeker");
+			seekerObj.transform.SetParent(transform, false);
+			seekerObj.AddComponent<RectTransform>();
+			seekerObj.AddComponent<SongSeeker>();
 		}
-		
+
 		private void OnEnable()
 		{	
 			_speedSettings = Instantiate(Plugin.SettingsObject, transform);

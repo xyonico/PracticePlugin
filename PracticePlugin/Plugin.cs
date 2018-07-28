@@ -36,16 +36,16 @@ namespace PracticePlugin
 				{
 					HasTimeScaleChanged = true;
 
-					if (_audioTimeSync != null)
+					if (AudioTimeSync != null)
 					{
-						_audioTimeSync.forcedAudioSync = true;
+						AudioTimeSync.forcedAudioSync = true;
 					}
 				}
 				else
 				{
-					if (_audioTimeSync != null)
+					if (AudioTimeSync != null)
 					{
-						_audioTimeSync.forcedAudioSync = false;
+						AudioTimeSync.forcedAudioSync = false;
 					}
 				}
 
@@ -64,7 +64,7 @@ namespace PracticePlugin
 
 		private static bool _init;
 		private static MainGameSceneSetupData _mainGameSceneSetupData;
-		private static AudioTimeSyncController _audioTimeSync;
+		public static AudioTimeSyncController AudioTimeSync { get; private set; }
 		private static AudioSource _songAudio;
 		private static string _lastLevelId;
 		private static UIElementsCreator _uiElementsCreator;
@@ -137,8 +137,8 @@ namespace PracticePlugin
 
 				_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
 
-				_audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
-				_songAudio = _audioTimeSync.GetPrivateField<AudioSource>("_audioSource");
+				AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
+				_songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
 				NoFail = !_mainGameSceneSetupData.gameplayOptions.validForScoreUse;
 
 				if (!NoFail)

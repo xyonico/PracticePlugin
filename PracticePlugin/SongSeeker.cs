@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
+using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -7,10 +10,14 @@ namespace PracticePlugin
 	public class SongSeeker : MonoBehaviour, IDragHandler, IPointerDownHandler
 	{
 		private float _playbackPosition;
+		
+		private AudioSource _songAudioSource;
 	
 		private Image _seekBackg;
 		private Image _seekBar;
 		private Image _seekCursor;
+		private TMP_Text _currentTime;
+		private TMP_Text _timeLength;
 
 		private Camera _mainCamera;
     
@@ -25,8 +32,15 @@ namespace PracticePlugin
 		private static readonly float HalfCursorSize = SeekCursorSize.x / 2;
 		private static readonly float HalfSeekBarSize = SeekBarSize.x / 2;
 
-		private void OnEnable()
+		private static readonly Vector2 TimeTextSize = new Vector2(16, 8);
+		private const float TimeTextMargin = 2;
+
+		private int _startTimeSamples;
+
+		private void Awake()
 		{
+			_songAudioSource = Plugin.AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
+			
 			var rectTransform = transform as RectTransform;
 			rectTransform.anchorMin = Vector2.right * 0.5f;
 			rectTransform.anchorMax = Vector2.right * 0.5f;
@@ -57,8 +71,51 @@ namespace PracticePlugin
 			rectTransform.anchorMax = Vector2.up * 0.5f;
 			rectTransform.sizeDelta = SeekCursorSize;
 			_seekCursor.color = SeekCursorColor;
+			
+			_currentTime = new GameObject("Current Time").AddComponent<TextMeshProUGUI>();
+			rectTransform = _currentTime.rectTransform;
+			rectTransform.SetParent(transform, false);
+			rectTransform.anchorMin = Vector2.up * 0.5f;
+			rectTransform.anchorMax = Vector2.up * 0.5f;
+			rectTransform.sizeDelta = TimeTextSize;
+			rectTransform.anchoredPosition = new Vector2(-(TimeTextSize.x / 2) - TimeTextMargin, 0);
+			_currentTime.enableAutoSizing = true;
+			_currentTime.fontSizeMin = 1;
+			_currentTime.alignment = TextAlignmentOptions.Right;
+			_currentTime.text = "0:00";
+		
+			_timeLength = new GameObject("Time Length").AddComponent<TextMeshProUGUI>();
+			rectTransform = _timeLength.rectTransform;
+			rectTransform.SetParent(transform, false);
+			rectTransform.anchorMin = new Vector2(1, 0.5f);
+			rectTransform.anchorMax = new Vector2(1, 0.5f);
+			rectTransform.sizeDelta = TimeTextSize;
+			rectTransform.anchoredPosition = new Vector2(TimeTextSize.x / 2 + TimeTextMargin, 0);
+			_timeLength.enableAutoSizing = true;
+			_timeLength.fontSizeMin = 1;
+			_timeLength.alignment = TextAlignmentOptions.Left;
+			_timeLength.text = "0:00";
 
 			_mainCamera = Camera.main;
+		}
+
+		private void OnEnable()
+		{
+			if (_songAudioSource == null || _songAudioSource.clip == null) return;
+			_startTimeSamples = _songAudioSource.timeSamples;
+			_playbackPosition = (float) _songAudioSource.timeSamples / _songAudioSource.clip.samples;
+			
+			_timeLength.text = FormatTimeSpan(TimeSpan.FromSeconds(_songAudioSource.clip.length));
+			UpdateCurrentTimeText();
+		}
+
+		private void OnDisable()
+		{
+			if (_songAudioSource == null || _songAudioSource.clip == null) return;
+			var newTimeSamples = Mathf.RoundToInt(Mathf.Lerp(0, _songAudioSource.clip.samples, _playbackPosition));
+			if (_startTimeSamples == newTimeSamples) return;
+			_songAudioSource.timeSamples = Mathf.RoundToInt(Mathf.Lerp(0, _songAudioSource.clip.samples, _playbackPosition));
+			SongSeekBeatmapHandler.OnSongTimeChanged(_songAudioSource.time);
 		}
 
 		private void LateUpdate()
@@ -73,6 +130,8 @@ namespace PracticePlugin
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position, _mainCamera, out var pos);
 			var posX = pos.x + HalfSeekBarSize;
 			_playbackPosition = Mathf.InverseLerp(HalfCursorSize, SeekBarSize.x - HalfCursorSize, posX);
+			
+			UpdateCurrentTimeText();
 		}
 
 		public void OnPointerDown(PointerEventData eventData)
@@ -80,6 +139,18 @@ namespace PracticePlugin
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.pressPosition, _mainCamera, out var pos);
 			var posX = pos.x + HalfSeekBarSize;
 			_playbackPosition = Mathf.InverseLerp(HalfCursorSize, SeekBarSize.x - HalfCursorSize, posX);
+			
+			UpdateCurrentTimeText();
+		}
+
+		private void UpdateCurrentTimeText()
+		{
+			_currentTime.text = FormatTimeSpan(TimeSpan.FromSeconds(Mathf.Lerp(0, _songAudioSource.clip.length, _playbackPosition)));
+		}
+		
+		private static string FormatTimeSpan(TimeSpan ts)
+		{
+			return ts.ToString((int) ts.TotalHours > 0 ? @"h\:m\:ss" : @"m\:ss");
 		}
 	}
 }
