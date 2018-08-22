@@ -21,7 +21,7 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v3.2"; }
+			get { return "v3.0.1"; }
 		}
 		
 		public const float MaxSize = 5.05f;
