@@ -23,7 +23,6 @@ namespace PracticePlugin
 								.GetPrivateField<List<BeatmapObjectCallbackController.BeatmapObjectCallbackData>>(
 									"_beatmapObjectCallbackData");
 						
-						_beatmapObjectCallbackController.GetBeatmapDataModelFromProvider();
 						_beatmapData = _beatmapObjectCallbackController
 							.GetPrivateField<BeatmapDataModel>("_beatmapDataModel").beatmapData;
 					}
@@ -34,15 +33,12 @@ namespace PracticePlugin
 							.FirstOrDefault();
 						if (_beatmapObjectSpawnController != null)
 						{
-							_gameNotePrefab =
-								_beatmapObjectSpawnController.GetPrivateField<NoteController>("_gameNotePrefab");
-							_bombNotePrefab =
-								_beatmapObjectSpawnController.GetPrivateField<BombNoteController>("_bombNotePrefab");
-							_obstacleFullHeightPrefab =
-								_beatmapObjectSpawnController.GetPrivateField<ObstacleController>(
-									"_obstacleFullHeightPrefab");
-							_obstacleTopPrefab =
-								_beatmapObjectSpawnController.GetPrivateField<ObstacleController>("_obstacleTopPrefab");
+							_noteAPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteAPool");
+							_noteBPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteBPool");
+							_bombNotePool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_bombNotePool");
+							_fullHeightObstaclePool =
+								_beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_fullHeightObstaclePool");
+							_topObstaclePool = _beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_topObstaclePool");
 						}
 					}
 
@@ -62,10 +58,11 @@ namespace PracticePlugin
 		private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
 		private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
 
-		private static NoteController _gameNotePrefab;
-		private static BombNoteController _bombNotePrefab;
-		private static ObstacleController _obstacleFullHeightPrefab;
-		private static ObstacleController _obstacleTopPrefab;
+		private static NoteController.Pool _noteAPool;
+		private static NoteController.Pool _noteBPool;
+		private static NoteController.Pool _bombNotePool;
+		private static ObstacleController.Pool _fullHeightObstaclePool;
+		private static ObstacleController.Pool _topObstaclePool;
 		
 		private static BeatmapData _beatmapData;
 
@@ -106,13 +103,13 @@ namespace PracticePlugin
 			
 			_beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
 						
-			_gameNotePrefab.gameObject.RecycleAll();
-			_bombNotePrefab.gameObject.RecycleAll();
-			_obstacleFullHeightPrefab.RecycleAll();
-			_obstacleTopPrefab.RecycleAll();
+			_noteAPool.DespawnAll();
+			_bombNotePool.DespawnAll();
+			_fullHeightObstaclePool.DespawnAll();
+			_topObstaclePool.DespawnAll();
 			
 			Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
-			Plugin.AudioTimeSync.GetPrivateField<FloatVariableSetter>("_songTime").SetValue(newSongTime);
+			Plugin.AudioTimeSync.GetPrivateField<FloatSO>("_songTime").value = newSongTime;
 			_noteCutSoundEffectManager.SetPrivateField("_prevNoteATime", -1);
 			_noteCutSoundEffectManager.SetPrivateField("_prevNoteBTime", -1);
 		}

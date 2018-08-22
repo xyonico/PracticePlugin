@@ -15,32 +15,38 @@ namespace PracticePlugin
 
 		public void Init()
 		{
-			if (!Plugin.NoFail) return;
-			var seekerObj = new GameObject("Song Seeker");
-			seekerObj.transform.SetParent(transform, false);
-			seekerObj.AddComponent<RectTransform>();
-			SongSeeker = seekerObj.AddComponent<SongSeeker>();
-			SongSeeker.Init();
-			
-			new GameObject("No Fail Game Energy").AddComponent<NoFailGameEnergy>();
+			Invoke(nameof(InitDelayed), 0.1f);
 		}
 
-		private void Awake()
+		private void InitDelayed()
 		{
-			if (Plugin.NoFail) return;
-			_leaderboardText = new GameObject("Leaderboard Text").AddComponent<TextMeshProUGUI>();
-			var rectTransform = (RectTransform) _leaderboardText.transform;
-			rectTransform.SetParent(transform, false);
-			rectTransform.anchorMin = Vector2.right * 0.5f;
-			rectTransform.anchorMax = Vector2.right * 0.5f;
-			rectTransform.sizeDelta = new Vector2(100, 10);
-			rectTransform.anchoredPosition = new Vector2(0, 15);
-			_leaderboardText.fontSize = 4f;
-			_leaderboardText.alignment = TextAlignmentOptions.Center;
-			
-			if (Plugin.HasTimeScaleChanged)
+			if (Plugin.NoFail)
 			{
-				_leaderboardText.text = "Leaderboard has been disabled\nSet speed to 100% and restart to enable again";
+				var seekerObj = new GameObject("Song Seeker");
+				seekerObj.transform.SetParent(transform, false);
+				seekerObj.AddComponent<RectTransform>();
+				SongSeeker = seekerObj.AddComponent<SongSeeker>();
+				SongSeeker.Init();
+
+				new GameObject("No Fail Game Energy").AddComponent<NoFailGameEnergy>();
+			}
+			else
+			{
+				if (Plugin.NoFail) return;
+				_leaderboardText = new GameObject("Leaderboard Text").AddComponent<TextMeshProUGUI>();
+				var rectTransform = (RectTransform) _leaderboardText.transform;
+				rectTransform.SetParent(transform, false);
+				rectTransform.anchorMin = Vector2.right * 0.5f;
+				rectTransform.anchorMax = Vector2.right * 0.5f;
+				rectTransform.sizeDelta = new Vector2(100, 10);
+				rectTransform.anchoredPosition = new Vector2(0, 15);
+				_leaderboardText.fontSize = 4f;
+				_leaderboardText.alignment = TextAlignmentOptions.Center;
+
+				if (Plugin.HasTimeScaleChanged)
+				{
+					_leaderboardText.text = "Leaderboard has been disabled\nSet speed to 100% and restart to enable again";
+				}
 			}
 		}
 

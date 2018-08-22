@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using IllusionPlugin;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace PracticePlugin
@@ -18,11 +21,15 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v3.0"; }
+			get { return "v3.2"; }
 		}
-
+		
 		public const float MaxSize = 5.05f;
 		public const float StepSize = 0.05f;
+
+		public const string MenuSceneName = "Menu";
+		public const string GameSceneName = "GameCore";
+		public const string ContextSceneName = "StandardLevel";
 
 		public static GameObject SettingsObject { get; private set; }
 
@@ -76,17 +83,55 @@ namespace PracticePlugin
 		{
 			if (_init) return;
 			_init = true;
-			SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
+			SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
+		}
+
+		private void SceneManagerOnActiveSceneChanged(Scene oldScene, Scene newScene)
+		{
+			Console.WriteLine("Active scene changed: " + newScene.name);
+			for (var i = 0; i < SceneManager.sceneCount; i++)
+			{
+				var scene = SceneManager.GetSceneAt(i);
+				Console.WriteLine("Scene loaded!!: " + scene.name);
+			}
+			
+			var gameScene = new Scene();
+			if (!gameScene.isLoaded) return;
+
+			Console.WriteLine("It's loaded!");
+			
+			var effectPoolsInstaller = Resources.FindObjectsOfTypeAll<EffectPoolsInstaller>().FirstOrDefault();
+			if (effectPoolsInstaller != null)
+			{
+				ReflectionUtil.CopyComponent(effectPoolsInstaller, typeof(EffectPoolsInstaller), typeof(CustomEffectPoolsInstaller),
+					effectPoolsInstaller.gameObject);
+				Object.DestroyImmediate(effectPoolsInstaller);
+
+				Console.WriteLine("Trying to find scene context");
+				SceneContext sceneContext = null;
+				foreach (var gameObject in gameScene.GetRootGameObjects())
+				{
+					sceneContext = gameObject.GetComponentInChildren<SceneContext>();
+					if (sceneContext != null)
+					{
+						break;
+					}
+				}
+					
+				if (sceneContext == null) return;
+				Console.WriteLine("Found it");
+				sceneContext.enabled = false;
+			}
 		}
 
 		public void OnApplicationQuit()
 		{
-			SceneManager.activeSceneChanged -= SceneManagerOnActiveSceneChanged;
+			SceneManager.sceneLoaded -= SceneManagerOnSceneLoaded;
 		}
 
-		private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene scene)
+		private void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode)
 		{
-			if (scene.buildIndex == 1)
+			if (scene.name == MenuSceneName)
 			{
 				if (_resetNoFail)
 				{
@@ -118,18 +163,58 @@ namespace PracticePlugin
 				SettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
 				Object.DontDestroyOnLoad(SettingsObject);
 			}
-			else
+			else if (scene.name == GameSceneName)
 			{
+				CustomEffectPoolsInstaller customEffectPoolsInstaller = null;
+				var effectPoolsInstaller = Resources.FindObjectsOfTypeAll<EffectPoolsInstaller>().FirstOrDefault();
+				if (effectPoolsInstaller != null)
+				{
+					customEffectPoolsInstaller = (CustomEffectPoolsInstaller) ReflectionUtil.CopyComponent(effectPoolsInstaller,
+						typeof(EffectPoolsInstaller), typeof(CustomEffectPoolsInstaller), effectPoolsInstaller.gameObject);
+				}
+				
+				SceneContext sceneContext = null;
+				SceneDecoratorContext sceneDecoratorContext = null;
+				
+				foreach (var gameObject in scene.GetRootGameObjects())
+				{
+					if (sceneContext == null)
+					{	
+						sceneContext = gameObject.GetComponentInChildren<SceneContext>(true);
+					}
+				}
+
+				foreach (var gameObject in SceneManager.GetSceneByName(ContextSceneName).GetRootGameObjects())
+				{
+					if (sceneDecoratorContext == null)
+					{
+						sceneDecoratorContext = gameObject.GetComponentInChildren<SceneDecoratorContext>(true);
+
+						if (sceneDecoratorContext != null)
+						{
+							Console.WriteLine("Found one in " + gameObject.name);
+						}
+					}
+				}
+				
+
+				if (sceneContext != null && sceneDecoratorContext != null)
+				{
+					Console.WriteLine("We're live!");
+					var prop = typeof(Context).GetField("_installers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+					var installersList = (List<MonoInstaller>) prop.GetValue(sceneDecoratorContext);
+					Console.WriteLine("There are " + installersList.Count + " installers!");
+					installersList.Remove(effectPoolsInstaller);
+					Object.DestroyImmediate(effectPoolsInstaller);
+					installersList.Add(customEffectPoolsInstaller);
+					Console.WriteLine("Done!");
+				}
+				
 				if (_mainGameSceneSetupData == null)
 				{
 					_mainGameSceneSetupData = Resources.FindObjectsOfTypeAll<MainGameSceneSetupData>().FirstOrDefault();
 					if (_mainGameSceneSetupData == null) return;
 					_mainGameSceneSetupData.didFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
-				}
-
-				if (scene.buildIndex != 5)
-				{
-					return;
 				}
 
 				if (_lastLevelId != _mainGameSceneSetupData.difficultyLevel.level.levelID &&
@@ -160,8 +245,6 @@ namespace PracticePlugin
 				{
 					TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
 				}
-
-				NoteCutSoundReplacer.ReplacePrefab();
 
 				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
 					.FirstOrDefault(x => x.name == "Buttons")
