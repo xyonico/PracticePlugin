@@ -1,17 +1,9 @@
-﻿using System;
-
-namespace PracticePlugin
+﻿namespace PracticePlugin
 {
 	public class CustomEffectPoolsInstaller : EffectPoolsInstaller
 	{
-		private void Awake()
-		{
-			Console.WriteLine("Custom Awake!");
-		}
-		
 		public override void InstallBindings()
 		{
-			Console.WriteLine("Custom install bindings!");
 			Container.BindMemoryPool<FlyingTextEffect, FlyingTextEffect.Pool>().WithInitialSize(20).FromComponentInNewPrefab(_flyingTextEffectPrefab);
 			Container.BindMemoryPool<FlyingScoreTextEffect, FlyingScoreTextEffect.Pool>().WithInitialSize(20)
 				.FromComponentInNewPrefab(_flyingScoreTextEffectPrefab);

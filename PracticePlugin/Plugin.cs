@@ -21,7 +21,7 @@ namespace PracticePlugin
 
 		public string Version
 		{
-			get { return "v3.0.1"; }
+			get { return "v3.0.2"; }
 		}
 		
 		public const float MaxSize = 5.05f;
@@ -85,45 +85,7 @@ namespace PracticePlugin
 			_init = true;
 			SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
 		}
-
-		private void SceneManagerOnActiveSceneChanged(Scene oldScene, Scene newScene)
-		{
-			Console.WriteLine("Active scene changed: " + newScene.name);
-			for (var i = 0; i < SceneManager.sceneCount; i++)
-			{
-				var scene = SceneManager.GetSceneAt(i);
-				Console.WriteLine("Scene loaded!!: " + scene.name);
-			}
-			
-			var gameScene = new Scene();
-			if (!gameScene.isLoaded) return;
-
-			Console.WriteLine("It's loaded!");
-			
-			var effectPoolsInstaller = Resources.FindObjectsOfTypeAll<EffectPoolsInstaller>().FirstOrDefault();
-			if (effectPoolsInstaller != null)
-			{
-				ReflectionUtil.CopyComponent(effectPoolsInstaller, typeof(EffectPoolsInstaller), typeof(CustomEffectPoolsInstaller),
-					effectPoolsInstaller.gameObject);
-				Object.DestroyImmediate(effectPoolsInstaller);
-
-				Console.WriteLine("Trying to find scene context");
-				SceneContext sceneContext = null;
-				foreach (var gameObject in gameScene.GetRootGameObjects())
-				{
-					sceneContext = gameObject.GetComponentInChildren<SceneContext>();
-					if (sceneContext != null)
-					{
-						break;
-					}
-				}
-					
-				if (sceneContext == null) return;
-				Console.WriteLine("Found it");
-				sceneContext.enabled = false;
-			}
-		}
-
+		
 		public void OnApplicationQuit()
 		{
 			SceneManager.sceneLoaded -= SceneManagerOnSceneLoaded;
@@ -189,25 +151,17 @@ namespace PracticePlugin
 					if (sceneDecoratorContext == null)
 					{
 						sceneDecoratorContext = gameObject.GetComponentInChildren<SceneDecoratorContext>(true);
-
-						if (sceneDecoratorContext != null)
-						{
-							Console.WriteLine("Found one in " + gameObject.name);
-						}
 					}
 				}
 				
 
 				if (sceneContext != null && sceneDecoratorContext != null)
 				{
-					Console.WriteLine("We're live!");
 					var prop = typeof(Context).GetField("_installers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 					var installersList = (List<MonoInstaller>) prop.GetValue(sceneDecoratorContext);
-					Console.WriteLine("There are " + installersList.Count + " installers!");
 					installersList.Remove(effectPoolsInstaller);
 					Object.DestroyImmediate(effectPoolsInstaller);
 					installersList.Add(customEffectPoolsInstaller);
-					Console.WriteLine("Done!");
 				}
 				
 				if (_mainGameSceneSetupData == null)

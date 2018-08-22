@@ -73,11 +73,9 @@ namespace PracticePlugin
 				for (var i = 0; i < _beatmapData.beatmapLinesData.Length; i++)
 				{
 					callbackData.nextObjectIndexInLine[i] = 0;
-					while (callbackData.nextObjectIndexInLine[i] <
-					       _beatmapData.beatmapLinesData[i].beatmapObjectsData.Length)
+					while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Length)
 					{
-						var beatmapObjectData = _beatmapData.beatmapLinesData[i]
-							.beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
+						var beatmapObjectData = _beatmapData.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
 						if (beatmapObjectData.time - aheadTime >= newSongTime)
 						{
 							break;
@@ -102,11 +100,36 @@ namespace PracticePlugin
 			}
 			
 			_beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
-						
-			_noteAPool.DespawnAll();
-			_bombNotePool.DespawnAll();
-			_fullHeightObstaclePool.DespawnAll();
-			_topObstaclePool.DespawnAll();
+
+			var notesA = _noteAPool.activeItems.ToList();
+			foreach (var noteA in notesA)
+			{
+				_beatmapObjectSpawnController.Despawn(noteA);
+			}
+			
+			var notesB = _noteBPool.activeItems.ToList();
+			foreach (var noteB in notesB)
+			{
+				_beatmapObjectSpawnController.Despawn(noteB);
+			}
+			
+			var bombs = _bombNotePool.activeItems.ToList();
+			foreach (var bomb in bombs)
+			{
+				_beatmapObjectSpawnController.Despawn(bomb);
+			}
+			
+			var fullHeights = _fullHeightObstaclePool.activeItems.ToList();
+			foreach (var fullHeight in fullHeights)
+			{
+				_beatmapObjectSpawnController.Despawn(fullHeight);
+			}
+			
+			var tops = _topObstaclePool.activeItems.ToList();
+			foreach (var top in tops)
+			{
+				_beatmapObjectSpawnController.Despawn(top);
+			}
 			
 			Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
 			Plugin.AudioTimeSync.GetPrivateField<FloatSO>("_songTime").value = newSongTime;

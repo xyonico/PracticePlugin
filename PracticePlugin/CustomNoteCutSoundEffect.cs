@@ -33,7 +33,6 @@ namespace PracticePlugin
 		public override void Init(AudioClip audioClip, double noteDSPTime, float aheadTime, float missedTimeOffset,
 			Saber saber, NoteData noteData, bool handleWrongSaberTypeAsGood)
 		{
-			Console.WriteLine("Custom Init!");
 			base.Init(audioClip, noteDSPTime, aheadTime, missedTimeOffset, saber, noteData, handleWrongSaberTypeAsGood);
 			_audioSource.Stop();
 			var dspTime = AudioSettings.dspTime;
