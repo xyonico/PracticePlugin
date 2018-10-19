@@ -84,7 +84,9 @@ namespace PracticePlugin
 			if (_init) return;
 			_init = true;
 			SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
-		}
+
+            NoFailGameEnergy.limitLevelFail = ModPrefs.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
+        }
 		
 		public void OnApplicationQuit()
 		{

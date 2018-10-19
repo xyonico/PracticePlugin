@@ -193,7 +193,8 @@ namespace PracticePlugin
 			_songAudioSource.timeSamples = Mathf.RoundToInt(Mathf.Lerp(0, _songAudioSource.clip.samples, PlaybackPosition));
 			_songAudioSource.time = _songAudioSource.time - Mathf.Min(AheadTime, _songAudioSource.time);
 			SongSeekBeatmapHandler.OnSongTimeChanged(_songAudioSource.time, Mathf.Min(AheadTime, _songAudioSource.time));
-		}
+            NoFailGameEnergy.hasFailed = false;
+        }
 	
 		private void CheckLooperCursorStick()
 		{
