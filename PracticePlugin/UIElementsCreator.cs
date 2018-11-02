@@ -51,18 +51,21 @@ namespace PracticePlugin
 		}
 
 		private void OnEnable()
-		{	
-			_speedSettings = Instantiate(Plugin.SettingsObject, transform);
-			_speedSettings.SetActive(true);
-			
-			var rectTransform = (RectTransform) _speedSettings.transform;
-			rectTransform.anchorMin = Vector2.right * 0.5f;
-			rectTransform.anchorMax = Vector2.right * 0.5f;
-			rectTransform.anchoredPosition = new Vector2(0, 10);
-			
-			var speedController = _speedSettings.GetComponent<SpeedSettingsController>();
-			speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
-			speedController.Init();
+		{
+            if (Plugin.multiActive == false)
+            {
+                _speedSettings = Instantiate(Plugin.SettingsObject, transform);
+                _speedSettings.SetActive(true);
+
+                var rectTransform = (RectTransform)_speedSettings.transform;
+                rectTransform.anchorMin = Vector2.right * 0.5f;
+                rectTransform.anchorMax = Vector2.right * 0.5f;
+                rectTransform.anchoredPosition = new Vector2(0, 10);
+
+                var speedController = _speedSettings.GetComponent<SpeedSettingsController>();
+                speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
+                speedController.Init();
+            }
 		}
 
 		private void OnDisable()

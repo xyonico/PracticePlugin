@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using IllusionPlugin;
+using IllusionInjector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,6 +34,7 @@ namespace PracticePlugin
 
 		public static GameObject SettingsObject { get; private set; }
 
+        public static bool multiActive;
 		public static float TimeScale
 		{
 			get { return _timeScale; }
@@ -193,27 +195,45 @@ namespace PracticePlugin
 
 				_lastLevelId = _mainGameSceneSetupData.difficultyLevel.level.levelID;
 
-				AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
-				_songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
-				NoFail = !_mainGameSceneSetupData.gameplayOptions.validForScoreUse;
+                AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
+                _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
+                NoFail = !_mainGameSceneSetupData.gameplayOptions.validForScoreUse;
+                //Check if Multiplayer is active, disable accordingly
+                if (PluginManager.Plugins.Any(x => x.Name == "Beat Saber Multiplayer"))
+                {
+                    GameObject client = GameObject.Find("MultiplayerClient");
+                    if (client != null)
+                    {
+                        Console.WriteLine("[PracticePlugin] Found MultiplayerClient game object!");
+                        multiActive = true;
+                        
+                    }
+                    else
+                    {
+                        Console.WriteLine("[PracticePlugin] MultiplayerClient game object not found!");
+                    }
+                }
+                if (multiActive == true)
+                    NoFail = false;
 
-				if (!NoFail)
-				{
-					TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
-				}
 
-				var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
-					.FirstOrDefault(x => x.name == "Buttons")
+                if (!NoFail)
+                {
+                    TimeScale = Mathf.Clamp(TimeScale, 1, MaxSize);
+                }
+
+                var canvas = Resources.FindObjectsOfTypeAll<HorizontalLayoutGroup>()
+                    .FirstOrDefault(x => x.name == "Buttons")
 					?.transform.parent;
-				
-				if (canvas == null) return;
-				
-				_uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
-				_uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
-				_uiElementsCreator.Init();
-				TimeScale = TimeScale;
-			}
-		}
+
+                if (canvas == null) return;
+
+                _uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
+                _uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
+                _uiElementsCreator.Init();
+                TimeScale = TimeScale;
+            }
+        }
 
 		private void ResultsViewControllerOnContinueButtonPressedEvent(ResultsViewController obj)
 		{
@@ -260,7 +280,7 @@ namespace PracticePlugin
 		{
 			if (_uiElementsCreator == null || _uiElementsCreator.SongSeeker == null) return;
 			_uiElementsCreator.SongSeeker.OnUpdate();
-		}
+        }
 
 		public void OnFixedUpdate()
 		{
