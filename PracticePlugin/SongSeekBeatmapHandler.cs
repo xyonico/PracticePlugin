@@ -132,7 +132,7 @@ namespace PracticePlugin
 			}
 			
 			Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
-			Plugin.AudioTimeSync.GetPrivateField<FloatSO>("_songTime").value = newSongTime;
+            Plugin.AudioTimeSync.SetPrivateField("_songTime", newSongTime);
 			_noteCutSoundEffectManager.SetPrivateField("_prevNoteATime", -1);
 			_noteCutSoundEffectManager.SetPrivateField("_prevNoteBTime", -1);
 		}
