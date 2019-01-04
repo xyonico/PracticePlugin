@@ -88,6 +88,8 @@
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="SongSeeker.cs" />
     <Compile Include="SongSeekBeatmapHandler.cs" />
+    <Compile Include="NjsSettingsController.cs" />
+    <Compile Include="SpawnOffsetController.cs" />
     <Compile Include="SpeedSettingsController.cs" />
     <Compile Include="UIElementsCreator.cs" />
   </ItemGroup>

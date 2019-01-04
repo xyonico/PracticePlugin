@@ -188,7 +188,8 @@ namespace PracticePlugin
             UpdateCurrentTimeText(PlaybackPosition);
         }
 
-        private void ApplyPlaybackPosition()
+
+        public void ApplyPlaybackPosition()
         {
             _songAudioSource.timeSamples = Mathf.RoundToInt(Mathf.Lerp(0, _songAudioSource.clip.samples, PlaybackPosition));
             _songAudioSource.time = _songAudioSource.time - Mathf.Min(AheadTime, _songAudioSource.time);

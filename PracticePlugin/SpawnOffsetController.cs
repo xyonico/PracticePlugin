@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PracticePlugin
 {
-    public class SpeedSettingsController : ListSettingsController
+    public class SpawnOffsetController : ListSettingsController
     {
         public event Action<float> ValueChangedEvent;
 
@@ -12,8 +12,8 @@ namespace PracticePlugin
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
-            numberOfElements = Mathf.RoundToInt(Plugin.SpeedMaxSize / Plugin.SpeedStepSize) - _indexOffset;
-            idx = Mathf.RoundToInt(Plugin.TimeScale / Plugin.SpeedStepSize) - _indexOffset;
+            numberOfElements = 50;
+            idx = (int)Plugin._levelData.difficultyBeatmap.noteJumpStartBeatOffset;
         }
 
         protected override void ApplyValue(int idx)
@@ -24,9 +24,9 @@ namespace PracticePlugin
         {
             if (ValueChangedEvent != null)
             {
-                ValueChangedEvent(Plugin.SpeedStepSize * (idx + _indexOffset));
+                ValueChangedEvent(idx);
             }
-            return Plugin.SpeedStepSize * 100f * (idx + _indexOffset) + "%";
+            return idx.ToString();
         }
     }
 }

@@ -10,6 +10,8 @@ namespace PracticePlugin
         public SongSeeker SongSeeker { get; private set; }
 
         private GameObject _speedSettings = null;
+        private GameObject _njsSettings = null;
+        private GameObject _offsetSettings = null;
         private TMP_Text _leaderboardText;
         private float _newTimeScale = 1;
 
@@ -39,7 +41,7 @@ namespace PracticePlugin
             {
                 if (_speedSettings == null && Plugin.PracticeMode)
                 {
-                    _speedSettings = Instantiate(Plugin.SettingsObject, transform);
+                    _speedSettings = Instantiate(Plugin.SpeedSettingsObject, transform);
                     _speedSettings.SetActive(true);
 
                     var rectTransform = (RectTransform)_speedSettings.transform;
@@ -51,8 +53,51 @@ namespace PracticePlugin
                     speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
                     speedController.Init();
                 }
+                if (_njsSettings == null && Plugin.PracticeMode)
+                {
+                    _njsSettings = Instantiate(Plugin.NjsSettingsObject, transform);
+                    _njsSettings.SetActive(true);
+
+                    var rectTransform = (RectTransform)_njsSettings.transform;
+                    rectTransform.anchorMin = Vector2.right * 0.5f;
+                    rectTransform.anchorMax = Vector2.right * 0.5f;
+                    rectTransform.anchoredPosition = new Vector2(0, 2);
+
+                    var njsController = _njsSettings.GetComponent<NjsSettingsController>();
+                    njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
+                    njsController.Init();
+                }
+                if (_offsetSettings == null && Plugin.PracticeMode)
+                {
+                    _offsetSettings = Instantiate(Plugin.SpawnOffsetSettingsObject, transform);
+                    _offsetSettings.SetActive(true);
+
+                    var rectTransform = (RectTransform)_offsetSettings.transform;
+                    rectTransform.anchorMin = Vector2.right * 0.5f;
+                    rectTransform.anchorMax = Vector2.right * 0.5f;
+                    rectTransform.anchoredPosition = new Vector2(0, -6);
+
+                    var spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
+                    spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
+                    spawnOffsetController.Init();
+                }
+
+
+
 
             }
+        }
+
+        private void SpawnOffsetController_ValueChangedEvent(float offset)
+        {
+            Plugin.AdjustSpawnOffset(offset);
+            SongSeeker.ApplyPlaybackPosition();
+        }
+
+        private void NjsController_ValueChangedEvent(float njs)
+        {
+            Plugin.AdjustNJS(njs);
+            SongSeeker.ApplyPlaybackPosition();
         }
 
         private void OnDisable()
