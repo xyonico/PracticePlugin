@@ -9,12 +9,12 @@ namespace PracticePlugin
     {
         public float StartTime
         {
-            get { return Mathf.InverseLerp(0, SongSeeker.SeekBarSize.x, startCursor.Position); }
+            get { return Mathf.InverseLerp(0, SongSeeker.SeekBarSize.x, _startCursor.Position); }
         }
 
         public float EndTime
         {
-            get { return Mathf.InverseLerp(0, SongSeeker.SeekBarSize.x, endCursor.Position); }
+            get { return Mathf.InverseLerp(0, SongSeeker.SeekBarSize.x, _endCursor.Position); }
         }
 
         public event Action OnDragEndEvent;
@@ -36,8 +36,8 @@ namespace PracticePlugin
 
         private Image _lineDuration;
 
-        public LooperCursor startCursor { get; private set; }
-        public LooperCursor endCursor { get; private set; }
+        private LooperCursor _startCursor;
+        private LooperCursor _endCursor;
 
         private LooperCursor _draggingCursor;
 
@@ -70,10 +70,10 @@ namespace PracticePlugin
             rectTransform.localEulerAngles = new Vector3(0, 0, 45);
             startCursorImage.color = StartColor;
 
-            startCursor = startCursorImage.gameObject.AddComponent<LooperCursor>();
-            startCursor.BeginDragEvent += CursorOnBeginDragEvent;
-            startCursor.EndDragEvent += CursorOnEndDragEvent;
-            startCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevStartTime);
+            _startCursor = startCursorImage.gameObject.AddComponent<LooperCursor>();
+            _startCursor.BeginDragEvent += CursorOnBeginDragEvent;
+            _startCursor.EndDragEvent += CursorOnEndDragEvent;
+            _startCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevStartTime);
 
             var endCursorImage = new GameObject("End Cursor").AddComponent<Image>();
             rectTransform = endCursorImage.rectTransform;
@@ -84,13 +84,13 @@ namespace PracticePlugin
             rectTransform.localEulerAngles = new Vector3(0, 0, 45);
             endCursorImage.color = EndColor;
 
-            endCursor = endCursorImage.gameObject.AddComponent<LooperCursor>();
-            endCursor.BeginDragEvent += CursorOnBeginDragEvent;
-            endCursor.EndDragEvent += CursorOnEndDragEvent;
-            endCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevEndTime);
+            _endCursor = endCursorImage.gameObject.AddComponent<LooperCursor>();
+            _endCursor.BeginDragEvent += CursorOnBeginDragEvent;
+            _endCursor.EndDragEvent += CursorOnEndDragEvent;
+            _endCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevEndTime);
 
-            startCursor.Init(LooperCursor.Type.Start);
-            endCursor.Init(LooperCursor.Type.End);
+            _startCursor.Init(LooperCursor.Type.Start);
+            _endCursor.Init(LooperCursor.Type.End);
 
             _mainCamera = Camera.main;
         }
@@ -127,17 +127,17 @@ namespace PracticePlugin
 
                 if (_draggingCursor.CursorType == LooperCursor.Type.Start)
                 {
-                    _draggingCursor.Position = Mathf.Clamp(newPos, 0, endCursor.Position - MinCursorDistance);
+                    _draggingCursor.Position = Mathf.Clamp(newPos, 0, _endCursor.Position - MinCursorDistance);
                 }
                 else
                 {
-                    _draggingCursor.Position = Mathf.Clamp(newPos, startCursor.Position + MinCursorDistance,
+                    _draggingCursor.Position = Mathf.Clamp(newPos, _startCursor.Position + MinCursorDistance,
                         SongSeeker.SeekBarSize.x);
                 }
             }
 
-            _lineDuration.rectTransform.sizeDelta = new Vector2(endCursor.Position - startCursor.Position, LineDurationWidth);
-            _lineDuration.rectTransform.anchoredPosition = new Vector2((startCursor.Position + endCursor.Position) / 2, 0);
+            _lineDuration.rectTransform.sizeDelta = new Vector2(_endCursor.Position - _startCursor.Position, LineDurationWidth);
+            _lineDuration.rectTransform.anchoredPosition = new Vector2((_startCursor.Position + _endCursor.Position) / 2, 0);
         }
 
         private void OnDestroy()
