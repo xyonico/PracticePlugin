@@ -28,7 +28,7 @@ namespace PracticePlugin
         public const float SpeedMaxSize = 5.05f;
         public const float SpeedStepSize = 0.05f;
 
-        public const int NjsMaxSize = 50;
+        public const int NjsMaxSize = 100;
         public const int NjstepSize = 1;
 
         public const string MenuSceneName = "Menu";
@@ -328,7 +328,11 @@ namespace PracticePlugin
                 TimeScale = TimeScale;
 
                 var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
-                bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.4f, bg.transform.localScale.z * 1f);
+          //      bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.2f, bg.transform.localScale.z * 1f);
+                bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
+
+
+
             }
             catch (Exception ex)
             {
@@ -345,7 +349,9 @@ namespace PracticePlugin
 
         private void MainGameSceneSetupDataOnDidFinishEvent(StandardLevelSceneSetupDataSO levelData, LevelCompletionResults results)
         {
+         
             /*
+             * 
 			if (!NoFail && HasTimeScaleChanged && results != null &&
 			    results.levelEndStateType == LevelCompletionResults.LevelEndStateType.Cleared)
 			{

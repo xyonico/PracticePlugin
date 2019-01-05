@@ -39,9 +39,8 @@ namespace PracticePlugin
 
         private const float StickToLooperCursorDistance = 0.02f;
         private const float LooperUITopMargin = -5f;
-
+        private bool init = false;
         private int _startTimeSamples;
-
         public void Init()
         {
             _songAudioSource = Plugin.AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
@@ -115,8 +114,8 @@ namespace PracticePlugin
                 Invoke(nameof(ApplyPlaybackPosition), 0.1f);
                 ApplyPlaybackPosition();
             }
-
             _mainCamera = Camera.main;
+
         }
 
         private void LooperUIOnOnDragEndEvent()
@@ -129,13 +128,15 @@ namespace PracticePlugin
             if (_songAudioSource == null || _songAudioSource.clip == null) return;
             _startTimeSamples = _songAudioSource.timeSamples;
             PlaybackPosition = (float)_songAudioSource.timeSamples / _songAudioSource.clip.samples;
-
             _timeLength.text = FormatTimeSpan(TimeSpan.FromSeconds(_songAudioSource.clip.length));
             UpdateCurrentTimeText(PlaybackPosition);
+         
         }
+
 
         private void OnDisable()
         {
+            init = true;
             if (_songAudioSource == null || _songAudioSource.clip == null) return;
             var newTimeSamples = Mathf.RoundToInt(Mathf.Lerp(0, _songAudioSource.clip.samples, PlaybackPosition));
             if (_startTimeSamples == newTimeSamples) return;
@@ -145,6 +146,11 @@ namespace PracticePlugin
         public void OnUpdate()
         {
             if (gameObject.activeInHierarchy || _looperUI == null || _songAudioSource == null || _songAudioSource.clip == null) return;
+            if(!init)
+            {
+                PlaybackPosition = (float)_songAudioSource.timeSamples / _songAudioSource.clip.samples;
+            }
+
             var newPos = (_songAudioSource.time + 0.1f) / _songAudioSource.clip.length;
             if (newPos >= _looperUI.EndTime && _looperUI.EndTime != 1)
             {
