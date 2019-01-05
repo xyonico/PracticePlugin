@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.0.0"; }
+            get { return "v4.0.1"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
