@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.0.1"; }
+            get { return "v4.1.0"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -45,6 +45,8 @@ namespace PracticePlugin
             private set
             {
                 _timeScale = value;
+         //       AudioTimeSync.SetPrivateField("_timeScale", value);
+        //        AudioTimeSync.Init(_songAudio.clip, _songAudio.time, AudioTimeSync.GetPrivateField<float>("_songTimeOffset"), value);
                 if (_timeScale == 1f)
                     _mixer.musicPitch = 1;
                 else
@@ -273,7 +275,7 @@ namespace PracticePlugin
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
                 _mixer = _gameCoreSceneSetup.GetPrivateField<AudioMixerSO>("_audioMixer");
-                PracticeMode = (_levelData.gameplayCoreSetupData.practiceSettings != null);
+                PracticeMode = (_levelData.gameplayCoreSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
                 //Check if Multiplayer is active, disable accordingly
                 if (PluginManager.Plugins.Any(x => x.Name == "Beat Saber Multiplayer"))
                 {
@@ -330,7 +332,8 @@ namespace PracticePlugin
                 var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
           //      bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.2f, bg.transform.localScale.z * 1f);
                 bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
-
+                var pauseMenu = GameObject.Find("PauseMenu");
+                pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
 
 
             }
