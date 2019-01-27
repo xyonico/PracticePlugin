@@ -8,12 +8,13 @@ namespace PracticePlugin
         public event Action<float> ValueChangedEvent;
 
         private int _indexOffset;
-
+        private int defaultOffset;
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
             numberOfElements = 50;
-            idx = (int)Plugin._levelData.difficultyBeatmap.noteJumpStartBeatOffset;
+            defaultOffset = (int)Plugin._levelData.difficultyBeatmap.noteJumpStartBeatOffset;
+            idx = defaultOffset;
         }
 
         protected override void ApplyValue(int idx)
@@ -26,7 +27,10 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(idx);
             }
-            return idx.ToString();
+            if (idx == defaultOffset)
+                return $"<u>{idx}</u>";
+            else
+                return idx.ToString();
         }
     }
 }

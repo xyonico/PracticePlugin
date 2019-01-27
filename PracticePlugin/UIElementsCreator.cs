@@ -12,6 +12,9 @@ namespace PracticePlugin
         private GameObject _speedSettings = null;
         private GameObject _njsSettings = null;
         private GameObject _offsetSettings = null;
+        internal SpeedSettingsController speedController;
+        internal NjsSettingsController njsController;
+        internal SpawnOffsetController spawnOffsetController;
         private TMP_Text _leaderboardText;
         private float _newTimeScale = 1;
 
@@ -49,7 +52,7 @@ namespace PracticePlugin
                     rectTransform.anchorMax = Vector2.right * 0.5f;
                     rectTransform.anchoredPosition = new Vector2(0, 10);
 
-                    var speedController = _speedSettings.GetComponent<SpeedSettingsController>();
+                    speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                     speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
                     speedController.Init();
                 }
@@ -63,7 +66,7 @@ namespace PracticePlugin
                     rectTransform.anchorMax = Vector2.right * 0.5f;
                     rectTransform.anchoredPosition = new Vector2(0, 2);
 
-                    var njsController = _njsSettings.GetComponent<NjsSettingsController>();
+                    njsController = _njsSettings.GetComponent<NjsSettingsController>();
                     njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
                     njsController.Init();
                 }
@@ -77,7 +80,7 @@ namespace PracticePlugin
                     rectTransform.anchorMax = Vector2.right * 0.5f;
                     rectTransform.anchoredPosition = new Vector2(0, -6);
 
-                    var spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
+                    spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                     spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
                     spawnOffsetController.Init();
                 }
@@ -112,6 +115,18 @@ namespace PracticePlugin
         private void SpeedControllerOnValueChangedEvent(float timeScale)
         {
             _newTimeScale = timeScale;
+            if (Math.Abs(_newTimeScale - 1) > 0.0000000001f)
+            {
+          //      spawnOffsetController.enabled = false;
+         //       njsController.enabled = false;
+
+            }
+            else
+            {
+         //       spawnOffsetController.enabled = true;
+        //        njsController.enabled = true;
+
+            }
             if (Plugin.PracticeMode) return;
             if (!Plugin.HasTimeScaleChanged && Math.Abs(_newTimeScale - 1) > 0.0000000001f)
             {

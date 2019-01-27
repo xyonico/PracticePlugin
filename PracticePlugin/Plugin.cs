@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
-
+using CustomUI.GameplaySettings;
 namespace PracticePlugin
 {
     public class Plugin : IPlugin
@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.1.0"; }
+            get { return "v4.1.2"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -39,6 +39,7 @@ namespace PracticePlugin
         public static GameObject NjsSettingsObject { get; private set; }
         public static GameObject SpawnOffsetSettingsObject { get; private set; }
         public static bool multiActive;
+        internal static bool startWithFullEnergy = false;
         public static float TimeScale
         {
             get { return _timeScale; }
@@ -99,8 +100,26 @@ namespace PracticePlugin
             if (_init) return;
             _init = true;
             SceneManager.activeSceneChanged += OneSceneChanged;
-
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             NoFailGameEnergy.limitLevelFail = ModPrefs.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
+            startWithFullEnergy = ModPrefs.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
+        }
+
+        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            if(arg0.name == "Menu")
+            {
+                var fullEnergy = GameplaySettingsUI.CreateToggleOption(GameplaySettingsPanels.PlayerSettingsRight, "Start With Full Energy", "MainMenu", "Start With full energy in Practice Mode.");
+            fullEnergy.GetValue = ModPrefs.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
+            fullEnergy.OnToggle += (value) =>
+            {
+                startWithFullEnergy = value;
+                ModPrefs.SetBool("PracticePlugin", "startWithFullEnergy", value);
+            };
+            }
+
+
+            
         }
 
         public void OnApplicationQuit()
@@ -305,15 +324,15 @@ namespace PracticePlugin
                         _timeScale = _levelData.gameplayCoreSetupData.practiceSettings.songSpeedMul;
                     else
                         _timeScale = _levelData.gameplayCoreSetupData.gameplayModifiers.songSpeedMul;
-                    SharedCoroutineStarter.instance.StartCoroutine(DelayedUI());
+                    SharedCoroutineStarter.instance.StartCoroutine(DelayedSetup());
                 }
 
             }
         }
 
-        public System.Collections.IEnumerator DelayedUI()
+        public System.Collections.IEnumerator DelayedSetup()
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
             try
             {
                 Console.WriteLine("Atemmpting Practice Plugin UI");
@@ -335,6 +354,12 @@ namespace PracticePlugin
                 var pauseMenu = GameObject.Find("PauseMenu");
                 pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
 
+                if(startWithFullEnergy)
+                {
+                    GameEnergyCounter energyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
+                    if (energyCounter != null)
+                        energyCounter.AddEnergy(1 - energyCounter.energy);
+                }
 
             }
             catch (Exception ex)

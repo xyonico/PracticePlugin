@@ -26,6 +26,7 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(Plugin.SpeedStepSize * (idx + _indexOffset));
             }
+           
             return Plugin.SpeedStepSize * 100f * (idx + _indexOffset) + "%";
         }
     }
