@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.1.2"; }
+            get { return "v4.1.3"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -38,7 +38,6 @@ namespace PracticePlugin
         public static GameObject SpeedSettingsObject { get; private set; }
         public static GameObject NjsSettingsObject { get; private set; }
         public static GameObject SpawnOffsetSettingsObject { get; private set; }
-        public static bool multiActive;
         internal static bool startWithFullEnergy = false;
         public static float TimeScale
         {
@@ -296,22 +295,7 @@ namespace PracticePlugin
                 _mixer = _gameCoreSceneSetup.GetPrivateField<AudioMixerSO>("_audioMixer");
                 PracticeMode = (_levelData.gameplayCoreSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
                 //Check if Multiplayer is active, disable accordingly
-                if (PluginManager.Plugins.Any(x => x.Name == "Beat Saber Multiplayer"))
-                {
-                    GameObject client = GameObject.Find("MultiplayerClient");
-                    if (client != null)
-                    {
-                        Console.WriteLine("[PracticePlugin] Found MultiplayerClient game object!");
-                        multiActive = true;
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("[PracticePlugin] MultiplayerClient game object not found!");
-                    }
-                }
-                if (multiActive == true)
-                    PracticeMode = false;
+            
 
 
                 if (!PracticeMode)
