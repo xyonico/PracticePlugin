@@ -13,8 +13,9 @@ namespace PracticePlugin
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
             numberOfElements = 50;
-            defaultOffset = (int)Plugin._levelData.difficultyBeatmap.noteJumpStartBeatOffset;
+            defaultOffset = (int)Plugin._levelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpStartBeatOffset;
             idx = defaultOffset;
+            UIElementsCreator.spawnOffset = defaultOffset;
         }
 
         protected override void ApplyValue(int idx)

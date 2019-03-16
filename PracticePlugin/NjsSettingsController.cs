@@ -15,6 +15,7 @@ namespace PracticePlugin
             numberOfElements = 50;
             defaultNJS = (int)Plugin._spawnController.GetPrivateField<float>("_noteJumpMovementSpeed");
             idx = defaultNJS;
+            UIElementsCreator.njsSpeed = defaultNJS;
         }
 
         protected override void ApplyValue(int idx)

@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.1.3"; }
+            get { return "v4.2.0"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -31,7 +31,7 @@ namespace PracticePlugin
         public const int NjsMaxSize = 100;
         public const int NjstepSize = 1;
 
-        public const string MenuSceneName = "Menu";
+        public const string MenuSceneName = "MenuCore";
         public const string GameSceneName = "GameCore";
         public const string ContextSceneName = "GameplayCore";
 
@@ -84,10 +84,10 @@ namespace PracticePlugin
         public static bool PlayingNewSong { get; private set; }
 
         private static bool _init;
-        public static StandardLevelSceneSetupDataSO _levelData { get; private set; }
+        public static BS_Utils.Gameplay.LevelData _levelData { get; private set; }
         public static BeatmapObjectSpawnController _spawnController { get; private set; }
         public static AudioTimeSyncController AudioTimeSync { get; private set; }
-        private static AudioMixerSO _mixer;
+        private static AudioManagerSO _mixer;
         private static AudioSource _songAudio;
         private static GameplayCoreSceneSetup _gameCoreSceneSetup;
         private static string _lastLevelId;
@@ -106,7 +106,7 @@ namespace PracticePlugin
 
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            if(arg0.name == "Menu")
+            if(arg0.name == "MenuCore")
             {
                 var fullEnergy = GameplaySettingsUI.CreateToggleOption(GameplaySettingsPanels.PlayerSettingsRight, "Start With Full Energy", "MainMenu", "Start With full energy in Practice Mode.");
             fullEnergy.GetValue = ModPrefs.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
@@ -258,9 +258,9 @@ namespace PracticePlugin
 
                 if (_levelData == null)
                 {
-                    _levelData = Resources.FindObjectsOfTypeAll<StandardLevelSceneSetupDataSO>().FirstOrDefault();
+                    _levelData = BS_Utils.Plugin.LevelData;
                     if (_levelData == null) return;
-                    _levelData.didFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
+                    BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
                 }
 
                 if (_spawnController == null)
@@ -270,13 +270,13 @@ namespace PracticePlugin
                 }
 
 
-                if (_lastLevelId != _levelData.difficultyBeatmap.level.levelID &&
+                if (_lastLevelId != _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID &&
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
                     PlayingNewSong = true;
                     HasTimeScaleChanged = false;
                     TimeScale = 1;
-                    _lastLevelId = _levelData.difficultyBeatmap.level.levelID;
+                    _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 }
                 else
                 {
@@ -288,12 +288,12 @@ namespace PracticePlugin
                     HasTimeScaleChanged = false;
                 }
 
-                _lastLevelId = _levelData.difficultyBeatmap.level.levelID;
+                _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 _gameCoreSceneSetup = Resources.FindObjectsOfTypeAll<GameplayCoreSceneSetup>().FirstOrDefault();
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
-                _mixer = _gameCoreSceneSetup.GetPrivateField<AudioMixerSO>("_audioMixer");
-                PracticeMode = (_levelData.gameplayCoreSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
+                _mixer = _gameCoreSceneSetup.GetPrivateField<AudioManagerSO>("_audioMixer");
+                PracticeMode = (_levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
                 //Check if Multiplayer is active, disable accordingly
             
 
@@ -304,10 +304,10 @@ namespace PracticePlugin
                 }
                 if (PracticeMode)
                 {
-                    if (_levelData.gameplayCoreSetupData.practiceSettings.songSpeedMul != 1f)
-                        _timeScale = _levelData.gameplayCoreSetupData.practiceSettings.songSpeedMul;
+                    if (_levelData.GameplayCoreSceneSetupData.practiceSettings.songSpeedMul != 1f)
+                        _timeScale = _levelData.GameplayCoreSceneSetupData.practiceSettings.songSpeedMul;
                     else
-                        _timeScale = _levelData.gameplayCoreSetupData.gameplayModifiers.songSpeedMul;
+                        _timeScale = _levelData.GameplayCoreSceneSetupData.gameplayModifiers.songSpeedMul;
                     SharedCoroutineStarter.instance.StartCoroutine(DelayedSetup());
                 }
 
@@ -359,7 +359,7 @@ namespace PracticePlugin
                 */
         }
 
-        private void MainGameSceneSetupDataOnDidFinishEvent(StandardLevelSceneSetupDataSO levelData, LevelCompletionResults results)
+        private void MainGameSceneSetupDataOnDidFinishEvent(StandardLevelScenesTransitionSetupDataSO levelData, LevelCompletionResults results)
         {
          
             /*
@@ -414,7 +414,7 @@ namespace PracticePlugin
 
                 float halfJumpDur = 4f;
                 float maxHalfJump = _spawnController.GetPrivateField<float>("_maxHalfJumpDistance");
-                float noteJumpStartBeatOffset = _levelData.difficultyBeatmap.noteJumpStartBeatOffset;
+                float noteJumpStartBeatOffset = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpStartBeatOffset;
                 float moveSpeed = _spawnController.GetPrivateField<float>("_moveSpeed");
                 float moveDir = _spawnController.GetPrivateField<float>("_moveDurationInBeats");
                 float jumpDis;
@@ -446,6 +446,37 @@ namespace PracticePlugin
             float halfJumpDur = 4f;
             float maxHalfJump = _spawnController.GetPrivateField<float>("_maxHalfJumpDistance");
             float noteJumpStartBeatOffset = offset;
+            float moveSpeed = _spawnController.GetPrivateField<float>("_moveSpeed");
+            float moveDir = _spawnController.GetPrivateField<float>("_moveDurationInBeats");
+            float jumpDis;
+            float spawnAheadTime;
+            float moveDis;
+            float bpm = _spawnController.GetPrivateField<float>("_beatsPerMinute");
+            float num = 60f / bpm;
+            moveDis = moveSpeed * num * moveDir;
+            while (njs * num * halfJumpDur > maxHalfJump)
+            {
+                halfJumpDur /= 2f;
+            }
+            halfJumpDur += noteJumpStartBeatOffset;
+            if (halfJumpDur < 1f) halfJumpDur = 1f;
+            //        halfJumpDur = spawnController.GetPrivateField<float>("_halfJumpDurationInBeats");
+            jumpDis = njs * num * halfJumpDur * 2f;
+            spawnAheadTime = moveDis / moveSpeed + jumpDis * 0.5f / njs;
+            _spawnController.SetPrivateField("_halfJumpDurationInBeats", halfJumpDur);
+            _spawnController.SetPrivateField("_spawnAheadTime", spawnAheadTime);
+            _spawnController.SetPrivateField("_jumpDistance", jumpDis);
+            _spawnController.SetPrivateField("_noteJumpMovementSpeed", njs);
+            _spawnController.SetPrivateField("_moveDistance", moveDis);
+
+
+        }
+        public static void AdjustNjsAndOffset()
+        {
+            float njs = UIElementsCreator.njsSpeed;
+            float noteJumpStartBeatOffset = UIElementsCreator.spawnOffset;
+            float halfJumpDur = 4f;
+            float maxHalfJump = _spawnController.GetPrivateField<float>("_maxHalfJumpDistance");
             float moveSpeed = _spawnController.GetPrivateField<float>("_moveSpeed");
             float moveDir = _spawnController.GetPrivateField<float>("_moveDurationInBeats");
             float jumpDis;

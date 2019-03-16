@@ -7,8 +7,8 @@
             try
             {
                 Container.BindMemoryPool<FlyingTextEffect, FlyingTextEffect.Pool>().WithInitialSize(20).FromComponentInNewPrefab(_flyingTextEffectPrefab);
-                Container.BindMemoryPool<FlyingScoreTextEffect, FlyingScoreTextEffect.Pool>().WithInitialSize(20)
-                    .FromComponentInNewPrefab(_flyingScoreTextEffectPrefab);
+                Container.BindMemoryPool<FlyingScoreEffect, FlyingScoreEffect.Pool>().WithInitialSize(20)
+                    .FromComponentInNewPrefab(_flyingScoreEffectPrefab);
                 Container.BindMemoryPool<FlyingSpriteEffect, FlyingSpriteEffect.Pool>().WithInitialSize(20)
                     .FromComponentInNewPrefab(_flyingSpriteEffectPrefab);
                 Container.BindMemoryPool<NoteDebris, NoteDebris.Pool>().WithInitialSize(30).FromComponentInNewPrefab(_noteDebrisPrefab);

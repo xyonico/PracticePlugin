@@ -8,7 +8,8 @@ namespace PracticePlugin
     {
         public event Action<float> ValueChangedEvent;
         public SongSeeker SongSeeker { get; private set; }
-
+        internal static float njsSpeed;
+        internal static float spawnOffset;
         private GameObject _speedSettings = null;
         private GameObject _njsSettings = null;
         private GameObject _offsetSettings = null;
@@ -92,13 +93,15 @@ namespace PracticePlugin
 
         private void SpawnOffsetController_ValueChangedEvent(float offset)
         {
-            Plugin.AdjustSpawnOffset(offset);
+            spawnOffset = offset;
+            Plugin.AdjustNjsAndOffset();
             SongSeeker.ApplyPlaybackPosition();
         }
 
         private void NjsController_ValueChangedEvent(float njs)
         {
-            Plugin.AdjustNJS(njs);
+            njsSpeed = njs;
+            Plugin.AdjustNjsAndOffset();
             SongSeeker.ApplyPlaybackPosition();
         }
 
