@@ -50,7 +50,7 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_speedSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, 10);
+                rectTransform.anchoredPosition = new Vector2(0, 7);
 
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
@@ -64,7 +64,7 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_njsSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, 2);
+                rectTransform.anchoredPosition = new Vector2(0, -1);
 
                 njsController = _njsSettings.GetComponent<NjsSettingsController>();
                 njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
@@ -78,7 +78,7 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_offsetSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, -6);
+                rectTransform.anchoredPosition = new Vector2(0, -9);
 
                 spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                 spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
@@ -95,14 +95,14 @@ namespace PracticePlugin
         {
             spawnOffset = offset;
             Plugin.AdjustNjsAndOffset();
-            SongSeeker.ApplyPlaybackPosition();
+            SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
         private void NjsController_ValueChangedEvent(float njs)
         {
             njsSpeed = njs;
             Plugin.AdjustNjsAndOffset();
-            SongSeeker.ApplyPlaybackPosition();
+            SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
         private void OnDisable()

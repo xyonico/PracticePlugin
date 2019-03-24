@@ -11,7 +11,7 @@ namespace PracticePlugin
     {
         public float PlaybackPosition { get; private set; }
 
-        [SerializeField] private AudioSource _songAudioSource;
+        [SerializeField] internal AudioSource _songAudioSource;
         private LooperUI _looperUI;
 
         private Image _seekBackg;
@@ -40,7 +40,7 @@ namespace PracticePlugin
         private const float StickToLooperCursorDistance = 0.02f;
         private const float LooperUITopMargin = -5f;
         private bool init = false;
-        private int _startTimeSamples;
+        internal int _startTimeSamples;
         public void Init()
         {
             _songAudioSource = Plugin.AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
@@ -75,35 +75,26 @@ namespace PracticePlugin
             rectTransform.sizeDelta = SeekCursorSize;
             _seekCursor.color = SeekCursorColor;
 
-            _currentTime = new GameObject("Current Time").AddComponent<TextMeshProUGUI>();
-            rectTransform = _currentTime.rectTransform;
-            rectTransform.SetParent(transform, false);
-            rectTransform.anchorMin = Vector2.up * 0.5f;
-            rectTransform.anchorMax = Vector2.up * 0.5f;
-            rectTransform.sizeDelta = TimeTextSize;
-            rectTransform.anchoredPosition = new Vector2(-(TimeTextSize.x / 2) - TimeTextMargin, 0);
-            _currentTime.enableAutoSizing = true;
-            _currentTime.fontSizeMin = 1;
+            _currentTime = CustomUI.BeatSaber.BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-32f, -1f));
+            _currentTime.fontSize = 5f;
+           // rectTransform = _currentTime.rectTransform;
+           // rectTransform.anchorMin = Vector2.up * 0.5f;
+          //  rectTransform.anchorMax = Vector2.up * 0.5f;
+         //   rectTransform.sizeDelta = TimeTextSize;
+        //    rectTransform.anchoredPosition = new Vector2(-(TimeTextSize.x / 2) - TimeTextMargin, 0);
+      //      _currentTime.enableAutoSizing = true;
+         //   _currentTime.fontSizeMin = 1;
             _currentTime.alignment = TextAlignmentOptions.Right;
-            _currentTime.text = "0:00";
-
-            _timeLength = new GameObject("Time Length").AddComponent<TextMeshProUGUI>();
-            rectTransform = _timeLength.rectTransform;
-            rectTransform.SetParent(transform, false);
-            rectTransform.anchorMin = new Vector2(1, 0.5f);
-            rectTransform.anchorMax = new Vector2(1, 0.5f);
-            rectTransform.sizeDelta = TimeTextSize;
-            rectTransform.anchoredPosition = new Vector2(TimeTextSize.x / 2 + TimeTextMargin, 0);
-            _timeLength.enableAutoSizing = true;
-            _timeLength.fontSizeMin = 1;
+            
+            _timeLength = CustomUI.BeatSaber.BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(87f, -1f));
+            _timeLength.fontSize = 5f;
             _timeLength.alignment = TextAlignmentOptions.Left;
-            _timeLength.text = "0:00";
 
             var looperObj = new GameObject("Looper UI");
             looperObj.transform.SetParent(_seekBar.rectTransform, false);
             rectTransform = looperObj.AddComponent<RectTransform>();
             rectTransform.sizeDelta = SeekBarSize;
-            rectTransform.anchoredPosition = new Vector2(0, LooperUITopMargin);
+            rectTransform.anchoredPosition = new Vector2(0, LooperUITopMargin - 2f);
             _looperUI = looperObj.AddComponent<LooperUI>();
             _looperUI.Init(this);
             _looperUI.OnDragEndEvent += LooperUIOnOnDragEndEvent;
@@ -111,8 +102,8 @@ namespace PracticePlugin
             if (_looperUI.StartTime != 0)
             {
                 PlaybackPosition = _looperUI.StartTime;
-                Invoke(nameof(ApplyPlaybackPosition), 0.1f);
-                ApplyPlaybackPosition();
+         //       Invoke(nameof(ApplyPlaybackPosition), 0.1f);
+           //     ApplyPlaybackPosition();
             }
             _mainCamera = Camera.main;
 

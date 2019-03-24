@@ -21,7 +21,7 @@ namespace PracticePlugin
 						_callbackList =
 							_beatmapObjectCallbackController
 								.GetPrivateField<List<BeatmapObjectCallbackController.BeatmapObjectCallbackData>>(
-									"_beatmapObjectCallbackData");
+                                    "_beatmapObjectCallbackData");
 						
 						_beatmapData = _beatmapObjectCallbackController
 							.GetPrivateField<BeatmapDataModel>("_beatmapDataModel").beatmapData;
@@ -104,6 +104,7 @@ namespace PracticePlugin
 			var notesA = _noteAPool.activeItems.ToList();
 			foreach (var noteA in notesA)
 			{
+ //               Console.WriteLine("Despawning, Length: " + notesA.Count);
 				_beatmapObjectSpawnController.Despawn(noteA);
 			}
 			
