@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "v4.2.3"; }
+            get { return "v4.2.4"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -142,7 +142,7 @@ namespace PracticePlugin
 
                 if (SpeedSettingsObject != null) return;
 
-                var volumeSettings = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
+                var volumeSettings = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings == null) return;
 
@@ -153,7 +153,7 @@ namespace PracticePlugin
 
                 if (SpeedSettingsObject == null) return;
 
-                var volume = SpeedSettingsObject.GetComponent<VolumeSettingsController>();
+                var volume = SpeedSettingsObject.GetComponent<FormattedFloatListSettingsController>();
                 ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController),
                     typeof(SpeedSettingsController), SpeedSettingsObject);
                 Object.DestroyImmediate(volume);
@@ -165,7 +165,7 @@ namespace PracticePlugin
                 //NJS Object
                 if (NjsSettingsObject != null) return;
 
-                var volumeSettings2 = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
+                var volumeSettings2 = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings2 == null) return;
 
@@ -176,7 +176,7 @@ namespace PracticePlugin
 
                 if (NjsSettingsObject == null) return;
 
-                var volume2 = NjsSettingsObject.GetComponent<VolumeSettingsController>();
+                var volume2 = NjsSettingsObject.GetComponent<FormattedFloatListSettingsController>();
                 ReflectionUtil.CopyComponent(volume2, typeof(IncDecSettingsController),
                     typeof(NjsSettingsController), NjsSettingsObject);
                 Object.DestroyImmediate(volume2);
@@ -188,7 +188,7 @@ namespace PracticePlugin
                 //Spawn Offset Object
                 if (SpawnOffsetSettingsObject != null) return;
 
-                var volumeSettings3 = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
+                var volumeSettings3 = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings3 == null) return;
 
@@ -199,7 +199,7 @@ namespace PracticePlugin
 
                 if (SpawnOffsetSettingsObject == null) return;
 
-                var volume3 = SpawnOffsetSettingsObject.GetComponent<VolumeSettingsController>();
+                var volume3 = SpawnOffsetSettingsObject.GetComponent<FormattedFloatListSettingsController>();
                 ReflectionUtil.CopyComponent(volume3, typeof(IncDecSettingsController),
                     typeof(SpawnOffsetController), SpawnOffsetSettingsObject);
                 Object.DestroyImmediate(volume3);

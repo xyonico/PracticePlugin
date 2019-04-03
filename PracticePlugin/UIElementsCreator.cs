@@ -54,7 +54,6 @@ namespace PracticePlugin
 
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
-                speedController.Init();
             }
             if (_njsSettings == null && Plugin.PracticeMode)
             {
@@ -68,7 +67,6 @@ namespace PracticePlugin
 
                 njsController = _njsSettings.GetComponent<NjsSettingsController>();
                 njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
-                njsController.Init();
             }
             if (_offsetSettings == null && Plugin.PracticeMode)
             {
@@ -82,7 +80,6 @@ namespace PracticePlugin
 
                 spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                 spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
-                spawnOffsetController.Init();
             }
 
 
