@@ -8,7 +8,7 @@
 - The Song will only loop if the red diamond is not at the end of the song
 - The Speed, NJS, and spawn offset will reset to that of the song upon starting or restarting the song
 - Note: If you set a starting time for the song using the built in practice mode, the map literally starts at that point, so going back to before the starting point in practice plugin won't have any notes
-
+- Note: It is HEAVILY DISCOURAGED to use base game methods of changing speed in practice mode with practice plugin installed, and only change speed through the pause menu, as currently doing otherwise can cause audio desync
 
 ---
 ## Changelog v4.2.3
