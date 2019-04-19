@@ -17,7 +17,7 @@ namespace PracticePlugin
         private void Awake()
         {/*
             hasFailed = false;
-            limitLevelFail = ModPrefs.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
+            limitLevelFail = Config.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
 
 			_gameEnergyUIPanel = Resources.FindObjectsOfTypeAll<GameEnergyUIPanel>().FirstOrDefault();
 			if (_gameEnergyUIPanel == null) return;
