@@ -8,14 +8,11 @@ namespace PracticePlugin
         public event Action<float> ValueChangedEvent;
 
         private int _indexOffset;
-        private int defaultNJS;
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
             numberOfElements = 50;
-            defaultNJS = (int)Plugin._spawnController.GetPrivateField<float>("_noteJumpMovementSpeed");
-            idx = defaultNJS;
-            UIElementsCreator.njsSpeed = defaultNJS;
+            idx = (int)UIElementsCreator.currentNJS;
         }
 
         protected override void ApplyValue(int idx)
@@ -28,7 +25,7 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(idx);
             }
-            if (idx == defaultNJS)
+            if (idx == UIElementsCreator.defaultNJS)
                 return $"<u>{idx}</u>";
             else
             return idx.ToString();

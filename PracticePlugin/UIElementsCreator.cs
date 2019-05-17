@@ -8,8 +8,10 @@ namespace PracticePlugin
     {
         public event Action<float> ValueChangedEvent;
         public SongSeeker SongSeeker { get; private set; }
-        internal static float njsSpeed;
-        internal static float spawnOffset;
+        internal static float currentNJS;
+        internal static int currentSpawnOffset;
+        internal static float defaultNJS;
+        internal static int defaultOffset;
         private GameObject _speedSettings = null;
         private GameObject _njsSettings = null;
         private GameObject _offsetSettings = null;
@@ -35,6 +37,12 @@ namespace PracticePlugin
                 SongSeeker.Init();
 
                 new GameObject("No Fail Game Energy").AddComponent<NoFailGameEnergy>();
+                defaultNJS = Plugin._spawnController.GetPrivateField<float>("_noteJumpMovementSpeed");
+                currentNJS = defaultNJS;
+                //        Console.WriteLine("NJS: " + UIElementsCreator.defaultNJS);
+                defaultOffset = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpStartBeatOffset;
+                currentSpawnOffset = defaultOffset;
+                //        Console.WriteLine("Offset: " + UIElementsCreator.defaultOffset);
             }
 
         }
@@ -50,8 +58,9 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_speedSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, 7);
-
+                rectTransform.anchoredPosition = new Vector2(5, 4);
+                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed", new Vector2(-30f, -2f));
+                settingText.fontSize = 6f;
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
             }
@@ -63,8 +72,9 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_njsSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, -1);
-
+                rectTransform.anchoredPosition = new Vector2(5, -4);
+                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "NJS", new Vector2(-30f, -2f));
+                settingText.fontSize = 6f;
                 njsController = _njsSettings.GetComponent<NjsSettingsController>();
                 njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
             }
@@ -76,8 +86,9 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_offsetSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(0, -9);
-
+                rectTransform.anchoredPosition = new Vector2(5, -12);
+                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Spawn Offset", new Vector2(-30f, -2f));
+                settingText.fontSize = 6f;
                 spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                 spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
             }
@@ -88,16 +99,16 @@ namespace PracticePlugin
 
         }
 
-        private void SpawnOffsetController_ValueChangedEvent(float offset)
+        private void SpawnOffsetController_ValueChangedEvent(int offset)
         {
-            spawnOffset = offset;
+            currentSpawnOffset = offset;
             Plugin.AdjustNjsAndOffset();
             SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
         private void NjsController_ValueChangedEvent(float njs)
         {
-            njsSpeed = njs;
+            currentNJS = njs;
             Plugin.AdjustNjsAndOffset();
             SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }

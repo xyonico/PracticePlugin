@@ -17,12 +17,12 @@ namespace PracticePlugin
     {
         public string Name
         {
-            get { return "Practice Plugin"; }
+            get { return "PracticePlugin"; }
         }
 
         public string Version
         {
-            get { return "v4.3.0"; }
+            get { return "4.3.2"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -147,7 +147,6 @@ namespace PracticePlugin
             Object.Destroy(Resources.FindObjectsOfTypeAll<UIElementsCreator>().FirstOrDefault()?.gameObject);
             if (newScene.name == MenuSceneName)
             {
-
                 resultsViewController =
                 Resources.FindObjectsOfTypeAll<ResultsViewController>().FirstOrDefault();
                 if (resultsViewController != null)
@@ -176,14 +175,18 @@ namespace PracticePlugin
                     typeof(SpeedSettingsController), SpeedSettingsObject);
                 Object.DestroyImmediate(volume);
 
-                SpeedSettingsObject.GetComponentInChildren<TMP_Text>().text = "SPEED";
+                Polyglot.LocalizedTextMeshProUGUI localizer = SpeedSettingsObject.GetComponentInChildren<Polyglot.LocalizedTextMeshProUGUI>();
+                if (localizer != null)
+                    GameObject.Destroy(localizer);
+
+                SpeedSettingsObject.GetComponentInChildren<TMP_Text>().text = "";
                 Object.DontDestroyOnLoad(SpeedSettingsObject);
 
 
                 //NJS Object
                 if (NjsSettingsObject != null) return;
 
-                var volumeSettings2 = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
+                var volumeSettings2 = Resources.FindObjectsOfTypeAll<NamedIntListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings2 == null) return;
 
@@ -194,12 +197,16 @@ namespace PracticePlugin
 
                 if (NjsSettingsObject == null) return;
 
-                var volume2 = NjsSettingsObject.GetComponent<FormattedFloatListSettingsController>();
+                var volume2 = NjsSettingsObject.GetComponent<NamedIntListSettingsController>();
                 ReflectionUtil.CopyComponent(volume2, typeof(IncDecSettingsController),
                     typeof(NjsSettingsController), NjsSettingsObject);
                 Object.DestroyImmediate(volume2);
 
-                NjsSettingsObject.GetComponentInChildren<TMP_Text>().text = "NJS";
+                localizer = NjsSettingsObject.GetComponentInChildren<Polyglot.LocalizedTextMeshProUGUI>();
+                if (localizer != null)
+                    GameObject.Destroy(localizer);
+
+                NjsSettingsObject.GetComponentInChildren<TMP_Text>().text = "";
                 Object.DontDestroyOnLoad(NjsSettingsObject);
 
 
@@ -222,7 +229,11 @@ namespace PracticePlugin
                     typeof(SpawnOffsetController), SpawnOffsetSettingsObject);
                 Object.DestroyImmediate(volume3);
 
-                SpawnOffsetSettingsObject.GetComponentInChildren<TMP_Text>().text = "Spawn Offset";
+                localizer = SpawnOffsetSettingsObject.GetComponentInChildren<Polyglot.LocalizedTextMeshProUGUI>();
+                if (localizer != null)
+                    GameObject.Destroy(localizer);
+
+                SpawnOffsetSettingsObject.GetComponentInChildren<TMP_Text>().text = "";
                 Object.DontDestroyOnLoad(SpawnOffsetSettingsObject);
 
             }
@@ -260,7 +271,7 @@ namespace PracticePlugin
 
                     if (sceneContext != null && sceneDecoratorContext != null)
                     {
-                        var prop = typeof(Context).GetField("_installers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                        var prop = typeof(Context).GetField("_monoInstallers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                         var installersList = (List<MonoInstaller>)prop.GetValue(sceneDecoratorContext);
                         installersList.Remove(effectPoolsInstaller);
                         Object.DestroyImmediate(effectPoolsInstaller);
@@ -348,6 +359,7 @@ namespace PracticePlugin
                 if (failText != null)
                     failText.text = "";
             }
+            showFailTextNext = false;
         }
 
         public System.Collections.IEnumerator DelayedSetup()
@@ -516,8 +528,8 @@ namespace PracticePlugin
         }
         public static void AdjustNjsAndOffset()
         {
-            float njs = UIElementsCreator.njsSpeed;
-            float noteJumpStartBeatOffset = UIElementsCreator.spawnOffset;
+            float njs = UIElementsCreator.currentNJS;
+            float noteJumpStartBeatOffset = UIElementsCreator.currentSpawnOffset;
             float halfJumpDur = 4f;
             float maxHalfJump = _spawnController.GetPrivateField<float>("_maxHalfJumpDistance");
             float moveSpeed = _spawnController.GetPrivateField<float>("_moveSpeed");
