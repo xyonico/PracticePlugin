@@ -9,9 +9,9 @@ namespace PracticePlugin
         public event Action<float> ValueChangedEvent;
         public SongSeeker SongSeeker { get; private set; }
         internal static float currentNJS;
-        internal static int currentSpawnOffset;
+        internal static float currentSpawnOffset;
         internal static float defaultNJS;
-        internal static int defaultOffset;
+        internal static float defaultOffset;
         private GameObject _speedSettings = null;
         private GameObject _njsSettings = null;
         private GameObject _offsetSettings = null;
@@ -99,7 +99,7 @@ namespace PracticePlugin
 
         }
 
-        private void SpawnOffsetController_ValueChangedEvent(int offset)
+        private void SpawnOffsetController_ValueChangedEvent(float offset)
         {
             currentSpawnOffset = offset;
             Plugin.AdjustNjsAndOffset();
@@ -119,7 +119,7 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(_newTimeScale);
             }
-            DestroyImmediate(_speedSettings);
+            Destroy(_speedSettings);
         }
 
         private void SpeedControllerOnValueChangedEvent(float timeScale)

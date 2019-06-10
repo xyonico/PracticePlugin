@@ -5,14 +5,14 @@ namespace PracticePlugin
 {
     public class SpawnOffsetController : ListSettingsController
     {
-        public event Action<int> ValueChangedEvent;
+        public event Action<float> ValueChangedEvent;
 
         private int _indexOffset;
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
             numberOfElements = 50;
-            idx = UIElementsCreator.currentSpawnOffset; 
+            idx = (int)(10 * UIElementsCreator.currentSpawnOffset); 
         }
 
         protected override void ApplyValue(int idx)
@@ -23,12 +23,12 @@ namespace PracticePlugin
         {
             if (ValueChangedEvent != null)
             {
-                ValueChangedEvent(idx);
+                ValueChangedEvent(idx / 10f);
             }
-            if (idx == UIElementsCreator.defaultOffset)
-                return $"<u>{idx}</u>";
+            if ((idx / 10f) == UIElementsCreator.defaultOffset)
+                return $"<u>{idx / 10f}</u>";
             else
-                return idx.ToString();
+                return (idx /10f).ToString();
         }
     }
 }
