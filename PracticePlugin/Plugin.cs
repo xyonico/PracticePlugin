@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "4.4.0"; }
+            get { return "4.5.0"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -59,14 +59,14 @@ namespace PracticePlugin
 
                     if (AudioTimeSync != null)
                     {
-                        AudioTimeSync.forcedAudioSync = true;
+             //           AudioTimeSync.forcedNoAudioSync = true;
                     }
                 }
                 else
                 {
                     if (AudioTimeSync != null)
                     {
-                        AudioTimeSync.forcedAudioSync = false;
+               //         AudioTimeSync.forcedNoAudioSync = false;
                     }
                 }
 

@@ -36,9 +36,8 @@ namespace PracticePlugin
 							_noteAPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteAPool");
 							_noteBPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteBPool");
 							_bombNotePool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_bombNotePool");
-							_fullHeightObstaclePool =
-								_beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_fullHeightObstaclePool");
-							_topObstaclePool = _beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_topObstaclePool");
+							_obstaclePool =
+								_beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_obstaclePool");
 						}
 					}
 
@@ -61,8 +60,7 @@ namespace PracticePlugin
 		private static NoteController.Pool _noteAPool;
 		private static NoteController.Pool _noteBPool;
 		private static NoteController.Pool _bombNotePool;
-		private static ObstacleController.Pool _fullHeightObstaclePool;
-		private static ObstacleController.Pool _topObstaclePool;
+		private static ObstacleController.Pool _obstaclePool;
 		
 		private static BeatmapData _beatmapData;
 
@@ -120,17 +118,12 @@ namespace PracticePlugin
 				_beatmapObjectSpawnController.Despawn(bomb);
 			}
 			
-			var fullHeights = _fullHeightObstaclePool.activeItems.ToList();
-			foreach (var fullHeight in fullHeights)
+			var obstacles = _obstaclePool.activeItems.ToList();
+			foreach (var obstacle in obstacles)
 			{
-				_beatmapObjectSpawnController.Despawn(fullHeight);
+				_beatmapObjectSpawnController.Despawn(obstacle);
 			}
 			
-			var tops = _topObstaclePool.activeItems.ToList();
-			foreach (var top in tops)
-			{
-				_beatmapObjectSpawnController.Despawn(top);
-			}
 			
 			Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
             Plugin.AudioTimeSync.SetPrivateField("_songTime", newSongTime);
