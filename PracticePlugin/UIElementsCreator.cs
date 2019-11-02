@@ -59,7 +59,7 @@ namespace PracticePlugin
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
                 rectTransform.anchoredPosition = new Vector2(5, 4);
-                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed (Disabled Until Fixed)", new Vector2(-30f, -2f));
+                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed (UI Disabled Until Fixed)", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
