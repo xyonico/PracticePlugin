@@ -11,8 +11,8 @@ namespace PracticePlugin
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
-            numberOfElements = 50;
-            idx = (int)(10 * UIElementsCreator.currentSpawnOffset); 
+            numberOfElements = 100;
+            idx = 50 + (int)(10 * UIElementsCreator.currentSpawnOffset); 
         }
 
         protected override void ApplyValue(int idx)
@@ -23,12 +23,12 @@ namespace PracticePlugin
         {
             if (ValueChangedEvent != null)
             {
-                ValueChangedEvent(idx / 10f);
+                ValueChangedEvent((idx - 50) / 10f);
             }
-            if ((idx / 10f) == UIElementsCreator.defaultOffset)
-                return $"<u>{idx / 10f}</u>";
+            if (((idx - 50) / 10f) == UIElementsCreator.defaultOffset)
+                return $"<u>{(idx - 50) / 10f}</u>";
             else
-                return (idx /10f).ToString();
+                return ((idx - 50) /10f).ToString();
         }
     }
 }

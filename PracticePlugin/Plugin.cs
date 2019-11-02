@@ -22,7 +22,7 @@ namespace PracticePlugin
 
         public string Version
         {
-            get { return "4.5.0"; }
+            get { return "4.5.1"; }
         }
 
         public const float SpeedMaxSize = 5.05f;
@@ -59,21 +59,38 @@ namespace PracticePlugin
 
                     if (AudioTimeSync != null)
                     {
-             //           AudioTimeSync.forcedNoAudioSync = true;
+                        //           AudioTimeSync.forcedNoAudioSync = true;
                     }
                 }
                 else
                 {
                     if (AudioTimeSync != null)
                     {
-               //         AudioTimeSync.forcedNoAudioSync = false;
+                        //           AudioTimeSync.forcedNoAudioSync = false;
                     }
                 }
-
-                if (_songAudio != null)
+                if (AudioTimeSync != null)
                 {
-                    _songAudio.pitch = _timeScale;
+               //     AudioTimeSync.SetPrivateField("_timeScale", _timeScale); // = _timeScale;
+                                                                             //     AudioTimeSync.Init(_songAudio.clip, _songAudio.time, 
+                                                                             //           AudioTimeSync.GetPrivateField<float>("_songTimeOffset") - AudioTimeSync.GetPrivateField<FloatSO>("_audioLatency").value, _timeScale);
+                    Console.WriteLine("Called TimeScale");
+
+                    if (_songAudio != null)
+                    {
+                        _songAudio.pitch = _timeScale;
+                    }
+           //         AudioTimeSync.forcedNoAudioSync = true;
+                    //         float num = AudioTimeSync.GetPrivateField<float>("_startSongTime") + AudioTimeSync.GetPrivateField<float>("_songTimeOffset");
+                    //     AudioTimeSync.SetPrivateField("_audioStartTimeOffsetSinceStart", (Time.timeSinceLevelLoad * _timeScale) - num);
+                    //   AudioTimeSync.SetPrivateField("_fixingAudioSyncError", false);
+                    //   AudioTimeSync.SetPrivateField("_prevAudioSamplePos", _songAudio.timeSamples);
+                    //   AudioTimeSync.SetPrivateField("_playbackLoopIndex", 0);
+                    //          AudioTimeSync.SetPrivateField("_dspTimeOffset", AudioSettings.dspTime - (double)num);
+                    //    AudioTimeSync.SetPrivateField("_timeScale", _timeScale); // = _timeScale;
                 }
+
+
             }
         }
 
@@ -535,7 +552,7 @@ namespace PracticePlugin
             float moveSpeed = _spawnController.GetPrivateField<float>("_moveSpeed");
             float moveDir = _spawnController.GetPrivateField<float>("_moveDurationInBeats");
             float jumpDis;
-            float spawnAheadTime; 
+            float spawnAheadTime;
             float moveDis;
             float bpm = _spawnController.GetPrivateField<float>("_beatsPerMinute");
             float num = 60f / bpm;
