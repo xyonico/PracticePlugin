@@ -12,8 +12,10 @@ namespace PracticePlugin
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
-            numberOfElements = Mathf.RoundToInt(Plugin.SpeedMaxSize / Plugin.SpeedStepSize) - _indexOffset;
-            idx = Mathf.RoundToInt(Plugin.TimeScale / Plugin.SpeedStepSize) - _indexOffset;
+            //  numberOfElements = Mathf.RoundToInt(Plugin.SpeedMaxSize / Plugin.SpeedStepSize) - _indexOffset;
+            numberOfElements = 0;
+            idx = 0;
+       //     idx = Mathf.RoundToInt(Plugin.TimeScale / Plugin.SpeedStepSize) - _indexOffset;
         }
 
         protected override void ApplyValue(int idx)
@@ -26,8 +28,8 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(Plugin.SpeedStepSize * (idx + _indexOffset));
             }
-           
-            return Plugin.SpeedStepSize * 100f * (idx + _indexOffset) + "%";
+            return "";
+      //      return Plugin.SpeedStepSize * 100f * (idx + _indexOffset) + "%";
         }
     }
 }

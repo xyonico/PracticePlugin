@@ -59,7 +59,7 @@ namespace PracticePlugin
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
                 rectTransform.anchoredPosition = new Vector2(5, 4);
-                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed", new Vector2(-30f, -2f));
+                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed (Disabled Until Fixed)", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
@@ -124,6 +124,7 @@ namespace PracticePlugin
 
         private void SpeedControllerOnValueChangedEvent(float timeScale)
         {
+            /*
             _newTimeScale = timeScale;
             if (Math.Abs(_newTimeScale - 1) > 0.0000000001f)
             {
@@ -146,6 +147,7 @@ namespace PracticePlugin
             {
                 _leaderboardText.text = Plugin.HasTimeScaleChanged ? "Leaderboard has been disabled\nSet speed to 100% and restart to enable again" : string.Empty;
             }
+            */
         }
     }
 }

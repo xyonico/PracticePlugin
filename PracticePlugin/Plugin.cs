@@ -47,6 +47,7 @@ namespace PracticePlugin
             private set
             {
                 _timeScale = value;
+                return;
                 //       AudioTimeSync.SetPrivateField("_timeScale", value);
                 //        AudioTimeSync.Init(_songAudio.clip, _songAudio.time, AudioTimeSync.GetPrivateField<float>("_songTimeOffset"), value);
                 if (_timeScale == 1f)
