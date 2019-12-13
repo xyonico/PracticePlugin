@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
-using IllusionPlugin;
 namespace PracticePlugin
 {
     public class NoFailGameEnergy : MonoBehaviour

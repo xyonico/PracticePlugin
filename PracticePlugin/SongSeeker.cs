@@ -75,7 +75,7 @@ namespace PracticePlugin
             rectTransform.sizeDelta = SeekCursorSize;
             _seekCursor.color = SeekCursorColor;
 
-            _currentTime = CustomUI.BeatSaber.BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-83f, -1f));
+            _currentTime = Plugin.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-83f, -1f));
             _currentTime.fontSize = 5f;
            // rectTransform = _currentTime.rectTransform;
            // rectTransform.anchorMin = Vector2.up * 0.5f;
@@ -86,7 +86,7 @@ namespace PracticePlugin
          //   _currentTime.fontSizeMin = 1;
             _currentTime.alignment = TextAlignmentOptions.Right;
             
-            _timeLength = CustomUI.BeatSaber.BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(87f, -1f));
+            _timeLength = Plugin.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(87f, -1f));
             _timeLength.fontSize = 5f;
             _timeLength.alignment = TextAlignmentOptions.Left;
 

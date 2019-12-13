@@ -31,9 +31,9 @@ namespace PracticePlugin
         }
 
         public override void Init(AudioClip audioClip, double noteDSPTime, float aheadTime, float missedTimeOffset, float timeToPrevNote, float timeToNextNote,
-            Saber saber, NoteData noteData, bool handleWrongSaberTypeAsGood, float volumeMultiplier, bool ignoreSaberSpeed)
+            Saber saber, NoteData noteData, bool handleWrongSaberTypeAsGood, float volumeMultiplier, bool ignoreSaberSpeed, bool ignoreBadCuts)
         {
-            base.Init(audioClip, noteDSPTime, aheadTime, missedTimeOffset, timeToPrevNote, timeToNextNote, saber, noteData, handleWrongSaberTypeAsGood, volumeMultiplier, ignoreSaberSpeed);
+            base.Init(audioClip, noteDSPTime, aheadTime, missedTimeOffset, timeToPrevNote, timeToNextNote, saber, noteData, handleWrongSaberTypeAsGood, volumeMultiplier, ignoreSaberSpeed, ignoreBadCuts);
             _audioSource.Stop();
             var dspTime = AudioSettings.dspTime;
             var timeDiff = noteDSPTime - dspTime;

@@ -24,8 +24,8 @@ namespace PracticePlugin
                                     "_beatmapObjectCallbackData");
 						
 						_beatmapData = _beatmapObjectCallbackController
-							.GetPrivateField<BeatmapDataModel>("_beatmapDataModel").beatmapData;
-					}
+							.GetPrivateField<BeatmapData>("_beatmapData");
+                    }
 
 					if (_beatmapObjectSpawnController == null)
 					{

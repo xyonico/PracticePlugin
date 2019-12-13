@@ -2,28 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using IllusionPlugin;
-using IllusionInjector;
+
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 using Object = UnityEngine.Object;
-using CustomUI.GameplaySettings;
+//using CustomUI.GameplaySettings;
+using IPA;
 namespace PracticePlugin
 {
-    public class Plugin : IPlugin
+    public class Plugin : IBeatSaberPlugin
     {
-        public string Name
-        {
-            get { return "PracticePlugin"; }
-        }
-
-        public string Version
-        {
-            get { return "4.5.2"; }
-        }
 
         public const float SpeedMaxSize = 5.05f;
         public const float SpeedStepSize = 0.05f;
@@ -31,7 +22,7 @@ namespace PracticePlugin
         public const int NjsMaxSize = 100;
         public const int NjstepSize = 1;
 
-        public const string MenuSceneName = "MenuCore";
+        public const string MenuSceneName = "MenuViewControllers";
         public const string GameSceneName = "GameCore";
         public const string ContextSceneName = "GameplayCore";
 
@@ -121,17 +112,16 @@ namespace PracticePlugin
         {
             if (_init) return;
             _init = true;
-            SceneManager.activeSceneChanged += OnSceneChanged;
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             //  NoFailGameEnergy.limitLevelFail = Config.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
             startWithFullEnergy = Config.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
             showTimeFailed = Config.GetBool("PracticePlugin", "Show Time Failed", true, true);
         }
 
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        public void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             if (arg0.name == "MenuCore")
             {
+                /*
                 var practicePluginSubmenu = GameplaySettingsUI.CreateSubmenuOption(GameplaySettingsPanels.PlayerSettingsRight, "PracticePlugin", "MainMenu", "PracticePlugin", "Practice Plugin Settings");
                 var fullEnergy = GameplaySettingsUI.CreateToggleOption(GameplaySettingsPanels.PlayerSettingsRight, "Start With Full Energy", "PracticePlugin", "Start With full energy in Practice Mode.");
                 fullEnergy.GetValue = Config.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
@@ -149,6 +139,7 @@ namespace PracticePlugin
                 showTimeFailed = value;
                 Config.SetBool("PracticePlugin", "Show Time Failed", value);
             };
+            */
             }
 
 
@@ -157,10 +148,10 @@ namespace PracticePlugin
 
         public void OnApplicationQuit()
         {
-            SceneManager.activeSceneChanged -= OnSceneChanged;
+
         }
 
-        private void OnSceneChanged(Scene oldScene, Scene newScene)
+        public void OnActiveSceneChanged(Scene oldScene, Scene newScene)
         {
             Object.Destroy(Resources.FindObjectsOfTypeAll<UIElementsCreator>().FirstOrDefault()?.gameObject);
             if (newScene.name == MenuSceneName)
@@ -177,7 +168,7 @@ namespace PracticePlugin
 
                 if (SpeedSettingsObject != null) return;
 
-                var volumeSettings = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
+                var volumeSettings = Resources.FindObjectsOfTypeAll<NamedIntListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings == null) return;
 
@@ -188,7 +179,7 @@ namespace PracticePlugin
 
                 if (SpeedSettingsObject == null) return;
 
-                var volume = SpeedSettingsObject.GetComponent<FormattedFloatListSettingsController>();
+                var volume = SpeedSettingsObject.GetComponent<NamedIntListSettingsController>();
                 ReflectionUtil.CopyComponent(volume, typeof(IncDecSettingsController),
                     typeof(SpeedSettingsController), SpeedSettingsObject);
                 Object.DestroyImmediate(volume);
@@ -231,7 +222,7 @@ namespace PracticePlugin
                 //Spawn Offset Object
                 if (SpawnOffsetSettingsObject != null) return;
 
-                var volumeSettings3 = Resources.FindObjectsOfTypeAll<FormattedFloatListSettingsController>().FirstOrDefault();
+                var volumeSettings3 = Resources.FindObjectsOfTypeAll<NamedIntListSettingsController>().FirstOrDefault();
 
                 if (volumeSettings3 == null) return;
 
@@ -242,7 +233,7 @@ namespace PracticePlugin
 
                 if (SpawnOffsetSettingsObject == null) return;
 
-                var volume3 = SpawnOffsetSettingsObject.GetComponent<FormattedFloatListSettingsController>();
+                var volume3 = SpawnOffsetSettingsObject.GetComponent<NamedIntListSettingsController>();
                 ReflectionUtil.CopyComponent(volume3, typeof(IncDecSettingsController),
                     typeof(SpawnOffsetController), SpawnOffsetSettingsObject);
                 Object.DestroyImmediate(volume3);
@@ -361,16 +352,16 @@ namespace PracticePlugin
             }
         }
 
-        private void ResultsViewController_didActivateEvent(bool firstActivation, VRUI.VRUIViewController.ActivationType activationType)
+        private void ResultsViewController_didActivateEvent(bool firstActivation, HMUI.ViewController.ActivationType activationType)
         {
             if (showFailTextNext && showTimeFailed)
             {
-                Console.WriteLine("Creating fail time");
-                if (failText == null)
-                    failText = CustomUI.BeatSaber.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -25f));
-                else
-                    failText.text = failTime;
-                failText.richText = true;
+         //       Console.WriteLine("Creating fail time");
+         //       if (failText == null)
+        //            failText = CustomUI.BeatSaber.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -25f));
+        //        else
+        //            failText.text = failTime;
+         //       failText.richText = true;
             }
             else
             {
@@ -574,6 +565,36 @@ namespace PracticePlugin
             _spawnController.SetPrivateField("_moveDistance", moveDis);
 
 
+        }
+
+        public void OnSceneUnloaded(Scene scene)
+        {
+        }
+
+        public static TextMeshProUGUI CreateText(RectTransform parent, string text, Vector2 anchoredPosition)
+        {
+            return CreateText(parent, text, anchoredPosition, new Vector2(60f, 10f));
+        }
+
+        public static TextMeshProUGUI CreateText(RectTransform parent, string text, Vector2 anchoredPosition, Vector2 sizeDelta)
+        {
+            GameObject gameObj = new GameObject("CustomUIText");
+            gameObj.SetActive(false);
+
+            TextMeshProUGUI textMesh = gameObj.AddComponent<TextMeshProUGUI>();
+            textMesh.font = UnityEngine.Object.Instantiate(Resources.FindObjectsOfTypeAll<TMP_FontAsset>().First(t => t.name == "Teko-Medium SDF No Glow"));
+            textMesh.rectTransform.SetParent(parent, false);
+            textMesh.text = text;
+            textMesh.fontSize = 4;
+            textMesh.color = Color.white;
+
+            textMesh.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            textMesh.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            textMesh.rectTransform.sizeDelta = sizeDelta;
+            textMesh.rectTransform.anchoredPosition = anchoredPosition;
+
+            gameObj.SetActive(true);
+            return textMesh;
         }
     }
 }

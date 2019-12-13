@@ -8,11 +8,12 @@ namespace PracticePlugin
         public event Action<float> ValueChangedEvent;
 
         private int _indexOffset;
-        protected override void GetInitValues(out int idx, out int numberOfElements)
+        protected override bool GetInitValues(out int idx, out int numberOfElements)
         {
             _indexOffset = Plugin.PracticeMode ? 1 : 20;
             numberOfElements = 100;
-            idx = 50 + (int)(10 * UIElementsCreator.currentSpawnOffset); 
+            idx = 50 + (int)(10 * UIElementsCreator.currentSpawnOffset);
+            return true;
         }
 
         protected override void ApplyValue(int idx)

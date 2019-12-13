@@ -58,8 +58,8 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_speedSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(5, 4);
-                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Speed (UI Disabled Until Fixed)", new Vector2(-30f, -2f));
+                rectTransform.anchoredPosition = new Vector2(5, 8);
+                TextMeshProUGUI settingText = Plugin.CreateText(rectTransform, "Speed (UI Disabled Until Fixed)", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
@@ -72,8 +72,8 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_njsSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(5, -4);
-                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "NJS", new Vector2(-30f, -2f));
+                rectTransform.anchoredPosition = new Vector2(5, 0);
+                TextMeshProUGUI settingText = Plugin.CreateText(rectTransform, "NJS", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 njsController = _njsSettings.GetComponent<NjsSettingsController>();
                 njsController.ValueChangedEvent += NjsController_ValueChangedEvent;
@@ -86,8 +86,8 @@ namespace PracticePlugin
                 var rectTransform = (RectTransform)_offsetSettings.transform;
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
-                rectTransform.anchoredPosition = new Vector2(5, -12);
-                TextMeshProUGUI settingText = CustomUI.BeatSaber.BeatSaberUI.CreateText(rectTransform, "Spawn Offset", new Vector2(-30f, -2f));
+                rectTransform.anchoredPosition = new Vector2(5, -8);
+                TextMeshProUGUI settingText = Plugin.CreateText(rectTransform, "Spawn Offset", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                 spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
