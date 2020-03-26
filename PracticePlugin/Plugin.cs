@@ -13,7 +13,8 @@ using Object = UnityEngine.Object;
 using IPA;
 namespace PracticePlugin
 {
-    public class Plugin : IBeatSaberPlugin
+    [Plugin(RuntimeOptions.SingleStartInit)]
+    public class Plugin
     {
 
         public const float SpeedMaxSize = 5.05f;
@@ -32,12 +33,35 @@ namespace PracticePlugin
         public static GameObject NjsSettingsObject { get; private set; }
         public static GameObject SpawnOffsetSettingsObject { get; private set; }
         internal static bool startWithFullEnergy = false;
+        internal static bool disablePitchCorrection = false;
+        internal static bool adjustNJSWithSpeed = false;
         public static float TimeScale
         {
             get { return _timeScale; }
             private set
             {
                 _timeScale = value;
+                if (!AudioTimeSync) return;
+                AudioTimeSyncController.InitData initData = AudioTimeSync.GetPrivateField<AudioTimeSyncController.InitData>("_initData");
+                AudioTimeSyncController.InitData newInitData = new AudioTimeSyncController.InitData(initData.audioClip,
+                    AudioTimeSync.songTime, initData.songTimeOffset, _timeScale);
+                AudioTimeSync.SetPrivateField("_initData", newInitData);
+                //Chipmunk Removal as per base game
+                if(!disablePitchCorrection)
+                {
+                    if (_timeScale == 1f)
+                        _mixer.musicPitch = 1;
+                    else
+                        _mixer.musicPitch = 1f / _timeScale;
+                }
+                else
+                {
+                    _mixer.musicPitch = 1f;
+                }
+
+                AudioTimeSync.StartSong();
+
+
                 return;
                 //       AudioTimeSync.SetPrivateField("_timeScale", value);
                 //        AudioTimeSync.Init(_songAudio.clip, _songAudio.time, AudioTimeSync.GetPrivateField<float>("_songTimeOffset"), value);
@@ -47,7 +71,6 @@ namespace PracticePlugin
                     _mixer.musicPitch = 1f / _timeScale;
                 if (!IsEqualToOne(_timeScale))
                 {
-                    HasTimeScaleChanged = true;
 
                     if (AudioTimeSync != null)
                     {
@@ -90,8 +113,6 @@ namespace PracticePlugin
 
         public static bool PracticeMode { get; private set; }
 
-        public static bool HasTimeScaleChanged { get; private set; }
-
         public static bool PlayingNewSong { get; private set; }
 
         private static bool _init;
@@ -108,6 +129,7 @@ namespace PracticePlugin
         private static bool _resetNoFail;
         private static bool showTimeFailed = true;
         private static TextMeshProUGUI failText;
+        [OnStart]
         public void OnApplicationStart()
         {
             if (_init) return;
@@ -115,6 +137,10 @@ namespace PracticePlugin
             //  NoFailGameEnergy.limitLevelFail = Config.GetBool("PracticePlugin", "limitLevelFailDisplay", false, true);
             startWithFullEnergy = Config.GetBool("PracticePlugin", "startWithFullEnergy", false, true);
             showTimeFailed = Config.GetBool("PracticePlugin", "Show Time Failed", true, true);
+            disablePitchCorrection = Config.GetBool("PracticePlugin", "Disable Pitch Correction", false, true);
+            adjustNJSWithSpeed = Config.GetBool("PracticePlugin", "Adjust NJS With Speed", false, true);
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         public void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -312,7 +338,6 @@ namespace PracticePlugin
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
                     PlayingNewSong = true;
-                    HasTimeScaleChanged = false;
                     TimeScale = 1;
                     _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 }
@@ -321,10 +346,6 @@ namespace PracticePlugin
                     PlayingNewSong = false;
                 }
 
-                if (IsEqualToOne(TimeScale))
-                {
-                    HasTimeScaleChanged = false;
-                }
 
                 _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 _gameCoreSceneSetup = Resources.FindObjectsOfTypeAll<GameplayCoreSceneSetup>().FirstOrDefault();
@@ -332,13 +353,12 @@ namespace PracticePlugin
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
                 _mixer = _gameCoreSceneSetup.GetPrivateField<AudioManagerSO>("_audioMixer");
                 PracticeMode = (_levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
-                //Check if Multiplayer is active, disable accordingly
 
 
 
                 if (!PracticeMode)
                 {
-                    TimeScale = Mathf.Clamp(TimeScale, 1, SpeedMaxSize);
+                    _timeScale = Mathf.Clamp(TimeScale, 1, SpeedMaxSize);
                 }
                 if (PracticeMode)
                 {
@@ -356,12 +376,11 @@ namespace PracticePlugin
         {
             if (showFailTextNext && showTimeFailed)
             {
-         //       Console.WriteLine("Creating fail time");
-         //       if (failText == null)
-        //            failText = CustomUI.BeatSaber.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -25f));
-        //        else
-        //            failText.text = failTime;
-         //       failText.richText = true;
+                if (failText == null)
+                    failText = BeatSaberMarkupLanguage.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -25f));
+                else
+                   failText.text = failTime;
+                failText.richText = true;
             }
             else
             {
@@ -439,10 +458,6 @@ namespace PracticePlugin
 
         private void UIElementsCreatorOnValueChangedEvent(float timeScale)
         {
-            if (!IsEqualToOne(timeScale))
-            {
-                HasTimeScaleChanged = true;
-            }
 
             TimeScale = timeScale;
         }
@@ -506,7 +521,7 @@ namespace PracticePlugin
         }
         public static void AdjustSpawnOffset(float offset)
         {
-            float njs = _spawnController.GetPrivateField<float>("_noteJumpMovementSpeed");
+            float njs = _spawnController.GetPrivateField<BeatmapObjectSpawnController.InitData>("_initData").noteJumpMovementSpeed;
             float halfJumpDur = 4f;
             float maxHalfJump = _spawnController.GetPrivateField<float>("_maxHalfJumpDistance");
             float noteJumpStartBeatOffset = offset;
@@ -561,12 +576,36 @@ namespace PracticePlugin
             _spawnController.SetPrivateField("_halfJumpDurationInBeats", halfJumpDur);
             _spawnController.SetPrivateField("_spawnAheadTime", spawnAheadTime);
             _spawnController.SetPrivateField("_jumpDistance", jumpDis);
-            _spawnController.SetPrivateField("_noteJumpMovementSpeed", njs);
+         //   _spawnController.SetPrivateField("_noteJumpMovementSpeed", njs);
             _spawnController.SetPrivateField("_moveDistance", moveDis);
 
 
         }
 
+        public static void UpdateSpawnMovementData(float njs, float noteJumpStartBeatOffset)
+        {
+            BeatmapObjectSpawnMovementData spawnMovementData =
+    _spawnController.GetPrivateField<BeatmapObjectSpawnMovementData>("_beatmapObjectSpawnMovementData");
+
+            float bpm = _spawnController.GetPrivateField<VariableBPMProcessor>("_variableBPMProcessor").currentBPM;
+
+            
+            if (adjustNJSWithSpeed)
+            {
+                float newNJS = njs * (1 / TimeScale);
+                njs = newNJS; 
+            }
+
+
+
+            spawnMovementData.SetPrivateField("_startNoteJumpMovementSpeed", njs);
+            spawnMovementData.SetPrivateField("_noteJumpStartBeatOffset", noteJumpStartBeatOffset);
+
+            spawnMovementData.Update(bpm,
+                _spawnController.GetPrivateField<float>("_jumpOffsetY"));
+
+
+        }
         public void OnSceneUnloaded(Scene scene)
         {
         }

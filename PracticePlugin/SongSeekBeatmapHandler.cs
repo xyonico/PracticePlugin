@@ -31,16 +31,22 @@ namespace PracticePlugin
 					{
 						_beatmapObjectSpawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>()
 							.FirstOrDefault();
-						if (_beatmapObjectSpawnController != null)
-						{
-							_noteAPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteAPool");
-							_noteBPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteBPool");
-							_bombNotePool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_bombNotePool");
-							_obstaclePool =
-								_beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_obstaclePool");
-						}
+
 					}
 
+                    if(_beatmapObjectManager == null)
+                    {
+                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectManager>().FirstOrDefault();
+
+                        if (_beatmapObjectManager != null)
+                        {
+                            _noteAPool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_noteAPool");
+                            _noteBPool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_noteBPool");
+                            _bombNotePool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_bombNotePool");
+                            _obstaclePool =
+                                _beatmapObjectManager.GetPrivateField<ObstacleController.Pool>("_obstaclePool");
+                        }
+                    }
 					if (_noteCutSoundEffectManager == null)
 					{
 						_noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>()
@@ -55,6 +61,7 @@ namespace PracticePlugin
 		private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> _callbackList;
 		private static BeatmapObjectCallbackController _beatmapObjectCallbackController;
 		private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
+        private static BeatmapObjectManager _beatmapObjectManager;
 		private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
 
 		private static NoteController.Pool _noteAPool;
@@ -102,26 +109,26 @@ namespace PracticePlugin
 			var notesA = _noteAPool.activeItems.ToList();
 			foreach (var noteA in notesA)
 			{
- //               Console.WriteLine("Despawning, Length: " + notesA.Count);
-				_beatmapObjectSpawnController.Despawn(noteA);
+                //               Console.WriteLine("Despawning, Length: " + notesA.Count);
+                _beatmapObjectManager.Despawn(noteA);
 			}
 			
 			var notesB = _noteBPool.activeItems.ToList();
 			foreach (var noteB in notesB)
 			{
-				_beatmapObjectSpawnController.Despawn(noteB);
+                _beatmapObjectManager.Despawn(noteB);
 			}
 			
 			var bombs = _bombNotePool.activeItems.ToList();
 			foreach (var bomb in bombs)
 			{
-				_beatmapObjectSpawnController.Despawn(bomb);
+                _beatmapObjectManager.Despawn(bomb);
 			}
 			
 			var obstacles = _obstaclePool.activeItems.ToList();
 			foreach (var obstacle in obstacles)
 			{
-				_beatmapObjectSpawnController.Despawn(obstacle);
+                _beatmapObjectManager.Despawn(obstacle);
 			}
 			
 			

@@ -26,10 +26,15 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(idx);
             }
+            string result;
+
             if (idx == UIElementsCreator.defaultNJS)
-                return $"<u>{idx}</u>";
+                result = $"<u>{idx}</u>";
             else
-            return idx.ToString();
+                result = idx.ToString();
+            if(Plugin.adjustNJSWithSpeed && UIElementsCreator._newTimeScale != 1f)
+                result += $"({(idx * (1f / UIElementsCreator._newTimeScale)).ToString("F2")})";
+            return result;
         }
     }
 }

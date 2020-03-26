@@ -19,7 +19,7 @@ namespace PracticePlugin
         internal NjsSettingsController njsController;
         internal SpawnOffsetController spawnOffsetController;
         private TMP_Text _leaderboardText;
-        private float _newTimeScale = 1;
+        internal static float _newTimeScale { get; private set; } = 1f;
 
         public void Init()
         {
@@ -37,7 +37,7 @@ namespace PracticePlugin
                 SongSeeker.Init();
 
                 new GameObject("No Fail Game Energy").AddComponent<NoFailGameEnergy>();
-                defaultNJS = Plugin._spawnController.GetPrivateField<float>("_noteJumpMovementSpeed");
+                defaultNJS = Plugin._spawnController.GetPrivateField<BeatmapObjectSpawnController.InitData>("_initData").noteJumpMovementSpeed;
                 currentNJS = defaultNJS;
                 //        Console.WriteLine("NJS: " + UIElementsCreator.defaultNJS);
                 defaultOffset = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpStartBeatOffset;
@@ -59,7 +59,7 @@ namespace PracticePlugin
                 rectTransform.anchorMin = Vector2.right * 0.5f;
                 rectTransform.anchorMax = Vector2.right * 0.5f;
                 rectTransform.anchoredPosition = new Vector2(5, 8);
-                TextMeshProUGUI settingText = Plugin.CreateText(rectTransform, "Speed (UI Disabled Until Fixed)", new Vector2(-30f, -2f));
+                TextMeshProUGUI settingText = Plugin.CreateText(rectTransform, "Speed (Use at own risk!)", new Vector2(-30f, -2f));
                 settingText.fontSize = 6f;
                 speedController = _speedSettings.GetComponent<SpeedSettingsController>();
                 speedController.ValueChangedEvent += SpeedControllerOnValueChangedEvent;
@@ -92,7 +92,9 @@ namespace PracticePlugin
                 spawnOffsetController = _offsetSettings.GetComponent<SpawnOffsetController>();
                 spawnOffsetController.ValueChangedEvent += SpawnOffsetController_ValueChangedEvent;
             }
-
+            _newTimeScale = Plugin.TimeScale;
+            njsController.Refresh(true);
+            spawnOffsetController.Refresh(true);
 
 
 
@@ -102,14 +104,16 @@ namespace PracticePlugin
         private void SpawnOffsetController_ValueChangedEvent(float offset)
         {
             currentSpawnOffset = offset;
-            Plugin.AdjustNjsAndOffset();
+            //  Plugin.AdjustNjsAndOffset();
+            Plugin.UpdateSpawnMovementData(currentNJS, currentSpawnOffset);
             SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
         private void NjsController_ValueChangedEvent(float njs)
         {
             currentNJS = njs;
-            Plugin.AdjustNjsAndOffset();
+            //  Plugin.AdjustNjsAndOffset();
+            Plugin.UpdateSpawnMovementData(currentNJS, currentSpawnOffset);
             SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
@@ -119,11 +123,15 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(_newTimeScale);
             }
+            Plugin.UpdateSpawnMovementData(UIElementsCreator.currentNJS, UIElementsCreator.currentSpawnOffset);
             Destroy(_speedSettings);
         }
 
         private void SpeedControllerOnValueChangedEvent(float timeScale)
         {
+            _newTimeScale = timeScale;
+            njsController.Refresh(true);
+            spawnOffsetController.Refresh(true);
             /*
             _newTimeScale = timeScale;
             if (Math.Abs(_newTimeScale - 1) > 0.0000000001f)
