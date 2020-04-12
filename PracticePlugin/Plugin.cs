@@ -338,7 +338,7 @@ namespace PracticePlugin
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
                     PlayingNewSong = true;
-                    TimeScale = 1;
+                   // TimeScale = 1;
                     _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 }
                 else
@@ -352,8 +352,8 @@ namespace PracticePlugin
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
                 _mixer = _gameCoreSceneSetup.GetPrivateField<AudioManagerSO>("_audioMixer");
-                PracticeMode = (_levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
-
+                PracticeMode = (_levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel 
+                    && Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault() == null);
 
 
                 if (!PracticeMode)
@@ -406,7 +406,8 @@ namespace PracticePlugin
                 _uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
                 _uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
                 _uiElementsCreator.Init();
-                TimeScale = TimeScale;
+
+              //  TimeScale = TimeScale;
 
                 var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
                 //      bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.2f, bg.transform.localScale.z * 1f);
