@@ -71,6 +71,8 @@ namespace PracticePlugin
         {
             get
             {
+                if (_beatmapObjectCallbackController == null)
+                    _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>().FirstOrDefault();
                 return _beatmapObjectCallbackController
                             .GetPrivateField<BeatmapData>("_beatmapData");
             }
