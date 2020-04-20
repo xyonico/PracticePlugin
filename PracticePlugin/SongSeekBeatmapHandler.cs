@@ -73,6 +73,8 @@ namespace PracticePlugin
 
 		public static void OnSongTimeChanged(float newSongTime, float aheadTime)
 		{
+            if(_beatmapObjectCallbackController)
+            _beatmapData = _beatmapObjectCallbackController.GetPrivateField<BeatmapData>("_beatmapData");
 			foreach (var callbackData in CallbackList)
 			{
 				for (var i = 0; i < _beatmapData.beatmapLinesData.Length; i++)
