@@ -274,6 +274,7 @@ namespace PracticePlugin
             }
             else if (newScene.name == GameSceneName)
             {
+                /*
                 CustomEffectPoolsInstaller customEffectPoolsInstaller = null;
                 var effectPoolsInstaller = Resources.FindObjectsOfTypeAll<EffectPoolsInstaller>().FirstOrDefault();
                 if (effectPoolsInstaller != null)
@@ -281,12 +282,14 @@ namespace PracticePlugin
                     customEffectPoolsInstaller = (CustomEffectPoolsInstaller)ReflectionUtil.CopyComponent(effectPoolsInstaller,
                         typeof(EffectPoolsInstaller), typeof(CustomEffectPoolsInstaller), effectPoolsInstaller.gameObject);
                 }
-
+                
+                Console.WriteLine("Custom effect Pool Installer Made");
+                */
                 SceneContext sceneContext = null;
                 SceneDecoratorContext sceneDecoratorContext = null;
                 try
                 {
-                    Console.WriteLine("Custom effect Pool Installer Made");
+
                     foreach (var gameObject in newScene.GetRootGameObjects())
                     {
                         if (sceneContext == null)
@@ -306,12 +309,14 @@ namespace PracticePlugin
 
                     if (sceneContext != null && sceneDecoratorContext != null)
                     {
+                        /*
                         var prop = typeof(Context).GetField("_monoInstallers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                         var installersList = (List<MonoInstaller>)prop.GetValue(sceneDecoratorContext);
                         installersList.Remove(effectPoolsInstaller);
                         Object.DestroyImmediate(effectPoolsInstaller);
                         installersList.Add(customEffectPoolsInstaller);
                         Console.WriteLine("Custom effect Pool Installer Added");
+                        */
                     }
                 }
                 catch (Exception ex)

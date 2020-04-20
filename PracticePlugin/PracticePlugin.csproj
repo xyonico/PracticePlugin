@@ -96,7 +96,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomEffectPoolsInstaller.cs" />
     <Compile Include="LooperCursor.cs" />
     <Compile Include="LooperUI.cs" />
     <Compile Include="NoFailGameEnergy.cs" />

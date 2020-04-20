@@ -22,9 +22,7 @@ namespace PracticePlugin
 							_beatmapObjectCallbackController
 								.GetPrivateField<List<BeatmapObjectCallbackController.BeatmapObjectCallbackData>>(
                                     "_beatmapObjectCallbackData");
-						
-						_beatmapData = _beatmapObjectCallbackController
-							.GetPrivateField<BeatmapData>("_beatmapData");
+					
                     }
 
 					if (_beatmapObjectSpawnController == null)
@@ -69,18 +67,27 @@ namespace PracticePlugin
 		private static NoteController.Pool _bombNotePool;
 		private static ObstacleController.Pool _obstaclePool;
 		
-		private static BeatmapData _beatmapData;
+		private static BeatmapData _beatmapData
+        {
+            get
+            {
+                return _beatmapObjectCallbackController
+                            .GetPrivateField<BeatmapData>("_beatmapData");
+            }
+        }
 
 		public static void OnSongTimeChanged(float newSongTime, float aheadTime)
 		{
-			foreach (var callbackData in CallbackList)
+            BeatmapData beatmap = _beatmapData;
+
+            foreach (var callbackData in CallbackList)
 			{
-				for (var i = 0; i < _beatmapData.beatmapLinesData.Length; i++)
+				for (var i = 0; i < beatmap.beatmapLinesData.Length; i++)
 				{
 					callbackData.nextObjectIndexInLine[i] = 0;
-					while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Length)
+					while (callbackData.nextObjectIndexInLine[i] < beatmap.beatmapLinesData[i].beatmapObjectsData.Length)
 					{
-						var beatmapObjectData = _beatmapData.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
+						var beatmapObjectData = beatmap.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
 						if (beatmapObjectData.time - aheadTime >= newSongTime)
 						{
 							break;
@@ -93,9 +100,9 @@ namespace PracticePlugin
 
 			var newNextEventIndex = 0;
 			
-			while (newNextEventIndex < _beatmapData.beatmapEventData.Length)
+			while (newNextEventIndex < beatmap.beatmapEventData.Length)
 			{
-				var beatmapEventData = _beatmapData.beatmapEventData[newNextEventIndex];
+				var beatmapEventData = beatmap.beatmapEventData[newNextEventIndex];
 				if (beatmapEventData.time >= newSongTime)
 				{
 					break;
