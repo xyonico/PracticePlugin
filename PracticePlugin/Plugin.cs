@@ -124,7 +124,7 @@ namespace PracticePlugin
         private static AudioSource _songAudio;
         private static GameplayCoreSceneSetup _gameCoreSceneSetup;
         private static string _lastLevelId;
-        private static UIElementsCreator _uiElementsCreator;
+        public static UIElementsCreator _uiElementsCreator;
         private static ResultsViewController resultsViewController;
         private static bool _resetNoFail;
         private static bool showTimeFailed = true;
@@ -367,6 +367,7 @@ namespace PracticePlugin
                     else
                         _timeScale = _levelData.GameplayCoreSceneSetupData.gameplayModifiers.songSpeedMul;
                     SharedCoroutineStarter.instance.StartCoroutine(DelayedSetup());
+                    
                 }
 
             }
@@ -414,7 +415,7 @@ namespace PracticePlugin
                 bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
                 var pauseMenu = GameObject.Find("PauseMenu");
                 pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
-
+                new GameObject("Practice Plugin Behavior").AddComponent<Behavior>();
                 if (startWithFullEnergy)
                 {
                     GameEnergyCounter energyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
@@ -478,11 +479,6 @@ namespace PracticePlugin
 
         }
 
-        public void OnUpdate()
-        {
-            if (_uiElementsCreator == null || _uiElementsCreator.SongSeeker == null) return;
-            _uiElementsCreator.SongSeeker.OnUpdate();
-        }
 
         public void OnFixedUpdate()
         {

@@ -96,6 +96,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behavior.cs" />
     <Compile Include="CustomEffectPoolsInstaller.cs" />
     <Compile Include="LooperCursor.cs" />
     <Compile Include="LooperUI.cs" />
