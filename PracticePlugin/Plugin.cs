@@ -306,12 +306,14 @@ namespace PracticePlugin
 
                     if (sceneContext != null && sceneDecoratorContext != null)
                     {
+                        /*
                         var prop = typeof(Context).GetField("_monoInstallers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                         var installersList = (List<MonoInstaller>)prop.GetValue(sceneDecoratorContext);
                         installersList.Remove(effectPoolsInstaller);
                         Object.DestroyImmediate(effectPoolsInstaller);
                         installersList.Add(customEffectPoolsInstaller);
                         Console.WriteLine("Custom effect Pool Installer Added");
+                        */
                     }
                 }
                 catch (Exception ex)
