@@ -36,15 +36,14 @@ namespace PracticePlugin
 
                     if (_beatmapObjectManager == null)
                     {
-                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectManager>().FirstOrDefault();
+                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().FirstOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager") as BasicBeatmapObjectManager;
 
                         if (_beatmapObjectManager != null)
                         {
-                            _noteAPool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_noteAPool");
-                            _noteBPool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_noteBPool");
-                            _bombNotePool = _beatmapObjectManager.GetPrivateField<NoteController.Pool>("_bombNotePool");
+                            _notePool = _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+                            _bombNotePool = _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
                             _obstaclePool =
-                                _beatmapObjectManager.GetPrivateField<ObstacleController.Pool>("_obstaclePool");
+                                _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
                         }
                     }
                     if (_noteCutSoundEffectManager == null)
@@ -61,13 +60,12 @@ namespace PracticePlugin
         private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> _callbackList;
         private static BeatmapObjectCallbackController _beatmapObjectCallbackController;
         private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
-        private static BeatmapObjectManager _beatmapObjectManager;
+        private static BasicBeatmapObjectManager _beatmapObjectManager;
         private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
 
-        private static NoteController.Pool _noteAPool;
-        private static NoteController.Pool _noteBPool;
-        private static NoteController.Pool _bombNotePool;
-        private static ObstacleController.Pool _obstaclePool;
+        private static MonoMemoryPoolContainer<GameNoteController> _notePool;
+        private static MonoMemoryPoolContainer<BombNoteController> _bombNotePool;
+        private static MonoMemoryPoolContainer<ObstacleController> _obstaclePool;
 
         private static BeatmapData _beatmapData;
 
@@ -77,10 +75,10 @@ namespace PracticePlugin
                 _beatmapData = _beatmapObjectCallbackController.GetPrivateField<BeatmapData>("_beatmapData");
             foreach (var callbackData in CallbackList)
             {
-                for (var i = 0; i < _beatmapData.beatmapLinesData.Length; i++)
+                for (var i = 0; i < _beatmapData.beatmapLinesData.Count; i++)
                 {
                     callbackData.nextObjectIndexInLine[i] = 0;
-                    while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Length)
+                    while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Count)
                     {
                         var beatmapObjectData = _beatmapData.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
                         if (beatmapObjectData.time - aheadTime >= newSongTime)
@@ -95,9 +93,9 @@ namespace PracticePlugin
 
             var newNextEventIndex = 0;
 
-            while (newNextEventIndex < _beatmapData.beatmapEventData.Length)
+            while (newNextEventIndex < _beatmapData.beatmapEventsData.Count)
             {
-                var beatmapEventData = _beatmapData.beatmapEventData[newNextEventIndex];
+                var beatmapEventData = _beatmapData.beatmapEventsData[newNextEventIndex];
                 if (beatmapEventData.time >= newSongTime)
                 {
                     break;
@@ -107,14 +105,15 @@ namespace PracticePlugin
             }
 
             _beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
-
-            var notesA = _noteAPool.activeItems.ToList();
+            _beatmapObjectManager.DissolveAllObjects();
+            /*
+            var notesA = _notePool.activeItems.ToList();
             foreach (var noteA in notesA)
             {
                 //               Console.WriteLine("Despawning, Length: " + notesA.Count);
-                _beatmapObjectManager.Despawn(noteA);
+                _beatmapObjectManager.DissolveAllObjects(noteA);
             }
-
+            
             var notesB = _noteBPool.activeItems.ToList();
             foreach (var noteB in notesB)
             {
@@ -132,7 +131,7 @@ namespace PracticePlugin
             {
                 _beatmapObjectManager.Despawn(obstacle);
             }
-
+            */
 
             Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
             Plugin.AudioTimeSync.SetPrivateField("_songTime", newSongTime);

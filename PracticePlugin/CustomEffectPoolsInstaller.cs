@@ -1,6 +1,7 @@
 ﻿using Zenject;
 namespace PracticePlugin
 {
+    /*
     public class CustomEffectPoolsInstaller : EffectPoolsInstaller
     {
         public override void ManualInstallBindings(DiContainer container, bool shortBeatEffect)
@@ -21,11 +22,12 @@ namespace PracticePlugin
             }
 
         }
-        /*
+        
         private CustomNoteCutSoundEffect ReplacePrefab()
         {
             return CustomNoteCutSoundEffect.CopyOriginal(_noteCutSoundEffectPrefab);
         }
-        */
+        
     }
+*/
 }

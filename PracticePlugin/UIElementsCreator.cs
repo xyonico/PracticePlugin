@@ -35,7 +35,6 @@ namespace PracticePlugin
                 seekerObj.AddComponent<RectTransform>();
                 SongSeeker = seekerObj.AddComponent<SongSeeker>();
                 SongSeeker.Init();
-
                 new GameObject("No Fail Game Energy").AddComponent<NoFailGameEnergy>();
                 defaultNJS = Plugin._spawnController.GetPrivateField<BeatmapObjectSpawnController.InitData>("_initData").noteJumpMovementSpeed;
                 currentNJS = defaultNJS;

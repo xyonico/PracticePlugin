@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace PracticePlugin
-{
+{/*
     public static class PoolExtensions
     {
         public static void DespawnAll<T>(this MemoryPoolWithActiveItems<T> memoryPool) where T : Component
@@ -14,4 +14,5 @@ namespace PracticePlugin
             }
         }
     }
+    */
 }

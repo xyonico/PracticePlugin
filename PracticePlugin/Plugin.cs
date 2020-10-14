@@ -11,6 +11,8 @@ using Zenject;
 using Object = UnityEngine.Object;
 //using CustomUI.GameplaySettings;
 using IPA;
+using BS_Utils.Gameplay;
+
 namespace PracticePlugin
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
@@ -122,7 +124,6 @@ namespace PracticePlugin
         public static AudioTimeSyncController AudioTimeSync { get; private set; }
         private static AudioManagerSO _mixer;
         private static AudioSource _songAudio;
-        private static GameplayCoreSceneSetup _gameCoreSceneSetup;
         private static string _lastLevelId;
         public static UIElementsCreator _uiElementsCreator;
         private static ResultsViewController resultsViewController;
@@ -274,6 +275,7 @@ namespace PracticePlugin
             }
             else if (newScene.name == GameSceneName)
             {
+                /*
                 CustomEffectPoolsInstaller customEffectPoolsInstaller = null;
                 var effectPoolsInstaller = Resources.FindObjectsOfTypeAll<EffectPoolsInstaller>().FirstOrDefault();
                 if (effectPoolsInstaller != null)
@@ -306,21 +308,22 @@ namespace PracticePlugin
 
                     if (sceneContext != null && sceneDecoratorContext != null)
                     {
-                        /*
+                        
                         var prop = typeof(Context).GetField("_monoInstallers", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                         var installersList = (List<MonoInstaller>)prop.GetValue(sceneDecoratorContext);
                         installersList.Remove(effectPoolsInstaller);
                         Object.DestroyImmediate(effectPoolsInstaller);
                         installersList.Add(customEffectPoolsInstaller);
                         Console.WriteLine("Custom effect Pool Installer Added");
-                        */
+                        
                     }
+            
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
-
+                */
 
                 if (_levelData == null)
                 {
@@ -350,11 +353,10 @@ namespace PracticePlugin
 
 
                 _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
-                _gameCoreSceneSetup = Resources.FindObjectsOfTypeAll<GameplayCoreSceneSetup>().FirstOrDefault();
+                _mixer = Resources.FindObjectsOfTypeAll<AudioManagerSO>().FirstOrDefault();
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
-                _mixer = _gameCoreSceneSetup.GetPrivateField<AudioManagerSO>("_audioMixer");
-                PracticeMode = (_levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel 
+                PracticeMode = (_levelData.Mode == BS_Utils.Gameplay.Mode.Standard && _levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel 
                     && Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault() == null);
 
 
@@ -375,7 +377,8 @@ namespace PracticePlugin
             }
         }
 
-        private void ResultsViewController_didActivateEvent(bool firstActivation, HMUI.ViewController.ActivationType activationType)
+
+        private void ResultsViewController_didActivateEvent(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             if (showFailTextNext && showTimeFailed)
             {
@@ -399,24 +402,30 @@ namespace PracticePlugin
             try
             {
                 Console.WriteLine("Atemmpting Practice Plugin UI");
-                var canvas = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("Canvas");
+                var canvas = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("MenuWrapper").transform.Find("Canvas").transform.Find("MainBar");
 
                 if (canvas == null)
                 {
                     Console.WriteLine("Canvas Null");
 
                 }
-                _uiElementsCreator = canvas.gameObject.AddComponent<UIElementsCreator>();
+                 
+                var uiObj = new GameObject("PracticePlugin UI");
+                uiObj.transform.SetParent(canvas);
+                uiObj.transform.localScale = new Vector3(1, 1, 1);
+                uiObj.transform.localPosition = new Vector3(0, -45f, -1f);
+
+                _uiElementsCreator = uiObj.AddComponent<UIElementsCreator>();
                 _uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
                 _uiElementsCreator.Init();
 
               //  TimeScale = TimeScale;
 
-                var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
+           //     var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
                 //      bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.2f, bg.transform.localScale.z * 1f);
-                bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
-                var pauseMenu = GameObject.Find("PauseMenu");
-                pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
+            //    bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
+          //      var pauseMenu = GameObject.Find("PauseMenu");
+          //      pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
                 new GameObject("Practice Plugin Behavior").AddComponent<Behavior>();
                 if (startWithFullEnergy)
                 {
@@ -586,7 +595,7 @@ namespace PracticePlugin
             BeatmapObjectSpawnMovementData spawnMovementData =
     _spawnController.GetPrivateField<BeatmapObjectSpawnMovementData>("_beatmapObjectSpawnMovementData");
 
-            float bpm = _spawnController.GetPrivateField<VariableBPMProcessor>("_variableBPMProcessor").currentBPM;
+            float bpm = _spawnController.GetPrivateField<VariableBpmProcessor>("_variableBpmProcessor").currentBpm;
 
             
             if (adjustNJSWithSpeed)
