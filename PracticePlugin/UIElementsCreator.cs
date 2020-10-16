@@ -1,7 +1,9 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-
+using BeatSaberMarkupLanguage;
+using BeatSaberMarkupLanguage.Components;
+using BeatSaberMarkupLanguage.Attributes;
 namespace PracticePlugin
 {
     public class UIElementsCreator : MonoBehaviour
@@ -12,18 +14,13 @@ namespace PracticePlugin
         internal static float currentSpawnOffset;
         internal static float defaultNJS;
         internal static float defaultOffset;
-        private GameObject _speedSettings = null;
-        private GameObject _njsSettings = null;
-        private GameObject _offsetSettings = null;
-        internal SpeedSettingsController speedController;
-        internal NjsSettingsController njsController;
-        internal SpawnOffsetController spawnOffsetController;
-        private TMP_Text _leaderboardText;
+
         internal static float _newTimeScale { get; private set; } = 1f;
 
         public void Init()
         {
-            Invoke(nameof(InitDelayed), 0.1f);
+            //  Invoke(nameof(InitDelayed), 0.1f);
+            InitDelayed();
         }
 
         private void InitDelayed()
@@ -48,7 +45,7 @@ namespace PracticePlugin
 
         private void OnEnable()
         {
-
+            /*
             if (_speedSettings == null && Plugin.PracticeMode)
             {
                 _speedSettings = Instantiate(Plugin.SpeedSettingsObject, transform);
@@ -94,7 +91,7 @@ namespace PracticePlugin
             _newTimeScale = Plugin.TimeScale;
             njsController.Refresh(true);
             spawnOffsetController.Refresh(true);
-
+            */
 
 
 
@@ -123,14 +120,14 @@ namespace PracticePlugin
                 ValueChangedEvent(_newTimeScale);
             }
             Plugin.UpdateSpawnMovementData(UIElementsCreator.currentNJS, UIElementsCreator.currentSpawnOffset);
-            Destroy(_speedSettings);
+      //      Destroy(_speedSettings);
         }
 
         private void SpeedControllerOnValueChangedEvent(float timeScale)
         {
             _newTimeScale = timeScale;
-            njsController.Refresh(true);
-            spawnOffsetController.Refresh(true);
+      //      njsController.Refresh(true);
+       //     spawnOffsetController.Refresh(true);
             /*
             _newTimeScale = timeScale;
             if (Math.Abs(_newTimeScale - 1) > 0.0000000001f)

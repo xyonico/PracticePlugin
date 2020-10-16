@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+using HMUI;
 namespace PracticePlugin
 {
     public class SongSeeker : MonoBehaviour, IDragHandler, IPointerDownHandler
@@ -14,9 +14,9 @@ namespace PracticePlugin
         [SerializeField] internal AudioSource _songAudioSource;
         private LooperUI _looperUI;
 
-        private Image _seekBackg;
-        private Image _seekBar;
-        private Image _seekCursor;
+        private ImageView _seekBackg;
+        private ImageView _seekBar;
+        private ImageView _seekCursor;
         private TMP_Text _currentTime;
         private TMP_Text _timeLength;
 
@@ -50,13 +50,13 @@ namespace PracticePlugin
             rectTransform.sizeDelta = ParentSize;
             rectTransform.anchoredPosition = new Vector2(0, 16);
 
-            _seekBackg = new GameObject("Background").AddComponent<Image>();
+            _seekBackg = new GameObject("Background").AddComponent<ImageView>();
             rectTransform = _seekBackg.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.sizeDelta = SeekBarSize;
             _seekBackg.color = BackgroundColor;
 
-            _seekBar = new GameObject("Seek Bar").AddComponent<Image>();
+            _seekBar = new GameObject("Seek Bar").AddComponent<ImageView>();
             rectTransform = _seekBar.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.sizeDelta = SeekBarSize;
@@ -67,13 +67,16 @@ namespace PracticePlugin
             _seekBar.fillMethod = Image.FillMethod.Horizontal;
             _seekBar.color = ForegroundColor;
 
-            _seekCursor = new GameObject("Seek Cursor").AddComponent<Image>();
+            _seekCursor = new GameObject("Seek Cursor").AddComponent<ImageView>();
             rectTransform = _seekCursor.rectTransform;
             rectTransform.SetParent(_seekBar.transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
             rectTransform.anchorMax = Vector2.up * 0.5f;
             rectTransform.sizeDelta = SeekCursorSize;
             _seekCursor.color = SeekCursorColor;
+
+
+
 
             _currentTime = Plugin.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-83f, -1f));
             _currentTime.fontSize = 5f;

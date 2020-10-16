@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using HMUI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 //using CustomUI.GameplaySettings;
 using IPA;
 using BS_Utils.Gameplay;
-
+using BeatSaberMarkupLanguage;
 namespace PracticePlugin
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
@@ -31,9 +31,9 @@ namespace PracticePlugin
 
         public string failTime { get; private set; }
         internal bool showFailTextNext { get; set; }
-        public static GameObject SpeedSettingsObject { get; private set; }
-        public static GameObject NjsSettingsObject { get; private set; }
-        public static GameObject SpawnOffsetSettingsObject { get; private set; }
+ //       public static GameObject SpeedSettingsObject { get; private set; }
+ //       public static GameObject NjsSettingsObject { get; private set; }
+ //       public static GameObject SpawnOffsetSettingsObject { get; private set; }
         internal static bool startWithFullEnergy = false;
         internal static bool disablePitchCorrection = false;
         internal static bool adjustNJSWithSpeed = false;
@@ -192,7 +192,7 @@ namespace PracticePlugin
                     resultsViewController.didActivateEvent += ResultsViewController_didActivateEvent;
                 }
 
-
+                /*
                 if (SpeedSettingsObject != null) return;
 
                 var volumeSettings = Resources.FindObjectsOfTypeAll<NamedIntListSettingsController>().FirstOrDefault();
@@ -271,7 +271,7 @@ namespace PracticePlugin
 
                 SpawnOffsetSettingsObject.GetComponentInChildren<TMP_Text>().text = "";
                 Object.DontDestroyOnLoad(SpawnOffsetSettingsObject);
-
+                */
             }
             else if (newScene.name == GameSceneName)
             {
@@ -383,7 +383,7 @@ namespace PracticePlugin
             if (showFailTextNext && showTimeFailed)
             {
                 if (failText == null)
-                    failText = BeatSaberMarkupLanguage.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -25f));
+                    failText = BeatSaberMarkupLanguage.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -35f));
                 else
                    failText.text = failTime;
                 failText.richText = true;
@@ -402,30 +402,34 @@ namespace PracticePlugin
             try
             {
                 Console.WriteLine("Atemmpting Practice Plugin UI");
-                var canvas = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("MenuWrapper").transform.Find("Canvas").transform.Find("MainBar");
+                var canvas = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("MenuWrapper").transform.Find("Canvas");
 
                 if (canvas == null)
                 {
                     Console.WriteLine("Canvas Null");
 
                 }
-                 
-                var uiObj = new GameObject("PracticePlugin UI");
-                uiObj.transform.SetParent(canvas);
-                uiObj.transform.localScale = new Vector3(1, 1, 1);
-                uiObj.transform.localPosition = new Vector3(0, -45f, -1f);
+                BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, PracticeUI.instance);
 
+                var uiObj = new GameObject("PracticePlugin Seeker UI");
+
+                
                 _uiElementsCreator = uiObj.AddComponent<UIElementsCreator>();
                 _uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
                 _uiElementsCreator.Init();
+                uiObj.transform.SetParent(canvas);
+             //   CurvedCanvasSettings curvedCanvasSettings = uiObj.AddComponent<CurvedCanvasSettings>();
+             //   curvedCanvasSettings.SetRadius(150f);
+                uiObj.transform.localScale = new Vector3(1, 1, 1);
+                uiObj.transform.localPosition = new Vector3(0, -65f, 0f);
 
-              //  TimeScale = TimeScale;
+                //  TimeScale = TimeScale;
 
-           //     var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
+                //     var bg = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("UI").transform.Find("BG");
                 //      bg.transform.localScale = new Vector3(bg.transform.localScale.x * 1f, bg.transform.localScale.y * 1.2f, bg.transform.localScale.z * 1f);
-            //    bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
-          //      var pauseMenu = GameObject.Find("PauseMenu");
-          //      pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
+                //    bg.transform.localPosition = new Vector3(bg.transform.localPosition.x, bg.transform.localPosition.y - 0.35f, bg.transform.localPosition.z);
+                //      var pauseMenu = GameObject.Find("PauseMenu");
+                //      pauseMenu.transform.localPosition = new Vector3(pauseMenu.transform.localPosition.x, pauseMenu.transform.localPosition.y + 0.175f, pauseMenu.transform.localPosition.z);
                 new GameObject("Practice Plugin Behavior").AddComponent<Behavior>();
                 if (startWithFullEnergy)
                 {

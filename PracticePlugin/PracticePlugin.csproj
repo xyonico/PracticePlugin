@@ -116,6 +116,7 @@
     <Compile Include="NoFailGameEnergy.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PoolExtensions.cs" />
+    <Compile Include="PracticeUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />
     <Compile Include="SongSeeker.cs" />
@@ -127,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PracticeUI.bsml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">

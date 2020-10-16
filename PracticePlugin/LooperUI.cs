@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HMUI;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -34,7 +35,7 @@ namespace PracticePlugin
 
         private SongSeeker _songSeeker;
 
-        private Image _lineDuration;
+        private ImageView _lineDuration;
 
         private LooperCursor _startCursor;
         private LooperCursor _endCursor;
@@ -53,7 +54,7 @@ namespace PracticePlugin
                 _prevEndTime = 1;
             }
 
-            _lineDuration = new GameObject("Line Duration").AddComponent<Image>();
+            _lineDuration = new GameObject("Line Duration").AddComponent<ImageView>();
             var rectTransform = _lineDuration.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
@@ -61,7 +62,7 @@ namespace PracticePlugin
             rectTransform.sizeDelta = Vector2.zero;
             _lineDuration.color = LineDurationColor;
 
-            var startCursorImage = new GameObject("Start Cursor").AddComponent<Image>();
+            var startCursorImage = new GameObject("Start Cursor").AddComponent<ImageView>();
             rectTransform = startCursorImage.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
@@ -75,7 +76,7 @@ namespace PracticePlugin
             _startCursor.EndDragEvent += CursorOnEndDragEvent;
             _startCursor.Position = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _prevStartTime);
 
-            var endCursorImage = new GameObject("End Cursor").AddComponent<Image>();
+            var endCursorImage = new GameObject("End Cursor").AddComponent<ImageView>();
             rectTransform = endCursorImage.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
@@ -83,7 +84,7 @@ namespace PracticePlugin
             rectTransform.sizeDelta = CursorSize;
             rectTransform.localEulerAngles = new Vector3(0, 0, 45);
             endCursorImage.color = EndColor;
-
+           
             _endCursor = endCursorImage.gameObject.AddComponent<LooperCursor>();
             _endCursor.BeginDragEvent += CursorOnBeginDragEvent;
             _endCursor.EndDragEvent += CursorOnEndDragEvent;
