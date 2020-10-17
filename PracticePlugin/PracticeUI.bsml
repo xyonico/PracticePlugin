@@ -1,5 +1,5 @@
 ﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
-  <settings-container child-control-width='true' child-expand-width='true' anchor-pos-y='-40'>
+  <settings-container child-control-width='true' child-expand-width='true' anchor-pos-y='-52'>
     <increment-setting value='speed' formatter='speedFormatter' on-change='setSpeed' text='Speed' increment='0.1' min='0' max='3'></increment-setting>
     <increment-setting formatter='njsFormatter' value='njs' on-change='setnjs' text='NJS' increment='1' min='1' max='50' integer-only='true'></increment-setting>
     <increment-setting formatter='spawnOffsetFormatter' value='offset' on-change='setoffset' text='Spawn Offset' increment='0.1' min='-2' max='2' integer-only='false'></increment-setting>

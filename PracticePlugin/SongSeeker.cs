@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using HMUI;
+using BeatSaberMarkupLanguage;
+
 namespace PracticePlugin
 {
     public class SongSeeker : MonoBehaviour, IDragHandler, IPointerDownHandler
@@ -43,6 +45,10 @@ namespace PracticePlugin
         internal int _startTimeSamples;
         public void Init()
         {
+            var tex = Texture2D.whiteTexture;
+            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f, 100, 1);
+
+
             _songAudioSource = Plugin.AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
             var rectTransform = transform as RectTransform;
             rectTransform.anchorMin = Vector2.right * 0.5f;
@@ -54,18 +60,21 @@ namespace PracticePlugin
             rectTransform = _seekBackg.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.sizeDelta = SeekBarSize;
+            _seekBackg.sprite = sprite;
+            _seekBackg.type = Image.Type.Simple;
             _seekBackg.color = BackgroundColor;
+            _seekBackg.material = Utilities.ImageResources.NoGlowMat;
 
             _seekBar = new GameObject("Seek Bar").AddComponent<ImageView>();
             rectTransform = _seekBar.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.sizeDelta = SeekBarSize;
-            var tex = Texture2D.whiteTexture;
-            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f, 100, 1);
+            
             _seekBar.sprite = sprite;
             _seekBar.type = Image.Type.Filled;
             _seekBar.fillMethod = Image.FillMethod.Horizontal;
             _seekBar.color = ForegroundColor;
+            _seekBar.material = Utilities.ImageResources.NoGlowMat;
 
             _seekCursor = new GameObject("Seek Cursor").AddComponent<ImageView>();
             rectTransform = _seekCursor.rectTransform;
@@ -73,12 +82,16 @@ namespace PracticePlugin
             rectTransform.anchorMin = Vector2.up * 0.5f;
             rectTransform.anchorMax = Vector2.up * 0.5f;
             rectTransform.sizeDelta = SeekCursorSize;
+
+            _seekCursor.sprite = sprite;
+            _seekCursor.type = Image.Type.Simple;
             _seekCursor.color = SeekCursorColor;
+            _seekCursor.material = Utilities.ImageResources.NoGlowMat;
 
 
 
 
-            _currentTime = Plugin.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-83f, -1f));
+            _currentTime = BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(-83f, -1f));
             _currentTime.fontSize = 5f;
            // rectTransform = _currentTime.rectTransform;
            // rectTransform.anchorMin = Vector2.up * 0.5f;
@@ -89,7 +102,7 @@ namespace PracticePlugin
          //   _currentTime.fontSizeMin = 1;
             _currentTime.alignment = TextAlignmentOptions.Right;
             
-            _timeLength = Plugin.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(87f, -1f));
+            _timeLength = BeatSaberUI.CreateText(this.GetComponent<RectTransform>(), "0:00", new Vector2(87f, -1f));
             _timeLength.fontSize = 5f;
             _timeLength.alignment = TextAlignmentOptions.Left;
 
