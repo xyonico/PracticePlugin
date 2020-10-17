@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using BeatSaberMarkupLanguage;
 
 namespace PracticePlugin
 {
@@ -54,13 +55,19 @@ namespace PracticePlugin
                 _prevEndTime = 1;
             }
 
+            var tex = Texture2D.whiteTexture;
+            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f, 100, 1);
+
             _lineDuration = new GameObject("Line Duration").AddComponent<ImageView>();
             var rectTransform = _lineDuration.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
             rectTransform.anchorMax = Vector2.up * 0.5f;
             rectTransform.sizeDelta = Vector2.zero;
+            _lineDuration.sprite = sprite;
+            _lineDuration.type = Image.Type.Simple;
             _lineDuration.color = LineDurationColor;
+            _lineDuration.material = Utilities.ImageResources.NoGlowMat;
 
             var startCursorImage = new GameObject("Start Cursor").AddComponent<ImageView>();
             rectTransform = startCursorImage.rectTransform;
@@ -69,7 +76,10 @@ namespace PracticePlugin
             rectTransform.anchorMax = Vector2.up * 0.5f;
             rectTransform.sizeDelta = CursorSize;
             rectTransform.localEulerAngles = new Vector3(0, 0, 45);
+            startCursorImage.sprite = sprite;
+            startCursorImage.type = Image.Type.Simple;
             startCursorImage.color = StartColor;
+            startCursorImage.material = Utilities.ImageResources.NoGlowMat;
 
             _startCursor = startCursorImage.gameObject.AddComponent<LooperCursor>();
             _startCursor.BeginDragEvent += CursorOnBeginDragEvent;
@@ -83,8 +93,11 @@ namespace PracticePlugin
             rectTransform.anchorMax = Vector2.up * 0.5f;
             rectTransform.sizeDelta = CursorSize;
             rectTransform.localEulerAngles = new Vector3(0, 0, 45);
+            endCursorImage.sprite = sprite;
+            endCursorImage.type = Image.Type.Simple;
             endCursorImage.color = EndColor;
-           
+            endCursorImage.material = Utilities.ImageResources.NoGlowMat;
+
             _endCursor = endCursorImage.gameObject.AddComponent<LooperCursor>();
             _endCursor.BeginDragEvent += CursorOnBeginDragEvent;
             _endCursor.EndDragEvent += CursorOnEndDragEvent;

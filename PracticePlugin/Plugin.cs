@@ -13,6 +13,11 @@ using Object = UnityEngine.Object;
 using IPA;
 using BS_Utils.Gameplay;
 using BeatSaberMarkupLanguage;
+using ModestTree;
+using BeatSaberMarkupLanguage.ViewControllers;
+using UnityEngine.UIElements;
+using BS_Utils.Utilities;
+
 namespace PracticePlugin
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
@@ -142,6 +147,7 @@ namespace PracticePlugin
             adjustNJSWithSpeed = Config.GetBool("PracticePlugin", "Adjust NJS With Speed", false, true);
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             SceneManager.sceneLoaded += OnSceneLoaded;
+            
         }
 
         public void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -337,21 +343,19 @@ namespace PracticePlugin
                     _spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault();
 
                 }
-
-
                 if (_lastLevelId != _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID &&
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
                     PlayingNewSong = true;
                    // TimeScale = 1;
-                    _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
+                   _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 }
                 else
                 {
                     PlayingNewSong = false;
                 }
 
-
+                
                 _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 _mixer = Resources.FindObjectsOfTypeAll<AudioManagerSO>().FirstOrDefault();
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
@@ -371,9 +375,8 @@ namespace PracticePlugin
                     else
                         _timeScale = _levelData.GameplayCoreSceneSetupData.gameplayModifiers.songSpeedMul;
                     SharedCoroutineStarter.instance.StartCoroutine(DelayedSetup());
-                    
                 }
-
+                
             }
         }
 
@@ -407,21 +410,25 @@ namespace PracticePlugin
                 if (canvas == null)
                 {
                     Console.WriteLine("Canvas Null");
-
                 }
+
                 BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, PracticeUI.instance);
 
-                var uiObj = new GameObject("PracticePlugin Seeker UI");
-
+                GameObject uiObj = new GameObject("PracticePlugin Seeker UI", typeof(RectTransform));
                 
+                (uiObj.transform as RectTransform).anchorMin = new Vector2(0, 0);
+                (uiObj.transform as RectTransform).anchorMax = new Vector2(1, 1);
+                (uiObj.transform as RectTransform).sizeDelta = new Vector2(0, 0);
+
                 _uiElementsCreator = uiObj.AddComponent<UIElementsCreator>();
                 _uiElementsCreator.ValueChangedEvent += UIElementsCreatorOnValueChangedEvent;
                 _uiElementsCreator.Init();
-                uiObj.transform.SetParent(canvas);
-             //   CurvedCanvasSettings curvedCanvasSettings = uiObj.AddComponent<CurvedCanvasSettings>();
-             //   curvedCanvasSettings.SetRadius(150f);
+                
+                uiObj.transform.SetParent(canvas, false);
+
                 uiObj.transform.localScale = new Vector3(1, 1, 1);
-                uiObj.transform.localPosition = new Vector3(0, -65f, 0f);
+                uiObj.transform.localPosition = new Vector3(0f, -3f, 0f);
+                
 
                 //  TimeScale = TimeScale;
 
