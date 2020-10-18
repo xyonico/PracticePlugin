@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using HMUI;
 using BeatSaberMarkupLanguage;
+using IPA.Logging;
+using BS_Utils.Utilities;
 
 namespace PracticePlugin
 {
@@ -59,7 +61,8 @@ namespace PracticePlugin
             _seekBackg = new GameObject("Background").AddComponent<ImageView>();
             rectTransform = _seekBackg.rectTransform;
             rectTransform.SetParent(transform, false);
-            rectTransform.sizeDelta = SeekBarSize;
+            rectTransform.sizeDelta = SeekBarSize + new Vector2(0, 7);
+            rectTransform.anchoredPosition = new Vector2(0, -1);
             _seekBackg.sprite = sprite;
             _seekBackg.type = Image.Type.Simple;
             _seekBackg.color = BackgroundColor;
@@ -177,11 +180,12 @@ namespace PracticePlugin
 
         public void OnDrag(PointerEventData eventData)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position,
-                _mainCamera, out var pos);
-            var posX = pos.x + HalfSeekBarSize;
-            PlaybackPosition = Mathf.InverseLerp(0, SeekBarSize.x, posX);
+       //     Debug.Log(eventData.position);
 
+            var posX = Mathf.Clamp(eventData.position.x, -1f, 1f);
+         //   Debug.Log(posX);
+            PlaybackPosition = Mathf.InverseLerp(-1, 1, posX);
+           // Debug.Log(PlaybackPosition);
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);
         }
