@@ -8,6 +8,7 @@ using HMUI;
 using BeatSaberMarkupLanguage;
 using IPA.Logging;
 using BS_Utils.Utilities;
+using System.Linq;
 
 namespace PracticePlugin
 {
@@ -45,6 +46,7 @@ namespace PracticePlugin
         private const float LooperUITopMargin = -5f;
         private bool init = false;
         internal int _startTimeSamples;
+        private float PlayBackPosition = 0.0f;
         public void Init()
         {
             var tex = Texture2D.whiteTexture;
@@ -180,12 +182,12 @@ namespace PracticePlugin
 
         public void OnDrag(PointerEventData eventData)
         {
-       //     Debug.Log(eventData.position);
-
-            var posX = Mathf.Clamp(eventData.position.x, -1f, 1f);
-         //   Debug.Log(posX);
-            PlaybackPosition = Mathf.InverseLerp(-1, 1, posX);
-           // Debug.Log(PlaybackPosition);
+            bool hovering = (eventData.hovered.Count() > 0);
+            if(!hovering) { return; }
+            
+            float clampedX = Mathf.Clamp(eventData.position.x, -1.0f, 1.0f);
+            PlaybackPosition = (clampedX + 1f) * 0.5f; // seekbar position [0.0 - 1.0]
+          
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);
         }
@@ -193,13 +195,11 @@ namespace PracticePlugin
         public void OnPointerDown(PointerEventData eventData)
         {
             eventData.useDragThreshold = false;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.pressPosition,
-                _mainCamera, out var pos);
+            float y = eventData.position.y - GameObject.Find("Seek Bar").transform.position.y;
+            if (y < -0.03f || y > 0.06) return;
 
-            if (pos.y < 0 || pos.y > SeekBarSize.y) return;
-
-            var posX = pos.x + HalfSeekBarSize;
-            PlaybackPosition = Mathf.InverseLerp(0, SeekBarSize.x, posX);
+            float clampedX = Mathf.Clamp(eventData.position.x, -1.0f, 1.0f);
+            PlaybackPosition = (clampedX + 1f) * 0.5f; // seekbar position [0.0 - 1.0]
 
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);
