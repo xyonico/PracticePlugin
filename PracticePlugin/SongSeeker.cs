@@ -180,12 +180,12 @@ namespace PracticePlugin
 
         public void OnDrag(PointerEventData eventData)
         {
-            Debug.Log(eventData.position);
+       //     Debug.Log(eventData.position);
 
             var posX = Mathf.Clamp(eventData.position.x, -1f, 1f);
-            Debug.Log(posX);
+         //   Debug.Log(posX);
             PlaybackPosition = Mathf.InverseLerp(-1, 1, posX);
-            Debug.Log(PlaybackPosition);
+           // Debug.Log(PlaybackPosition);
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);
         }
