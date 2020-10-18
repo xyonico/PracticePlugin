@@ -182,7 +182,7 @@ namespace PracticePlugin
 
         public void OnDrag(PointerEventData eventData)
         {
-            bool hovering = (eventData.hovered.Count() > 0);
+            bool hovering = (eventData.hovered.Count > 0);
             if(!hovering) { return; }
             
             float clampedX = Mathf.Clamp(eventData.position.x, -1.0f, 1.0f);

@@ -139,7 +139,8 @@ namespace PracticePlugin
             if (_draggingCursor != null)
             {
                 var eventData = _draggingCursor.EventData;
-
+                bool hovering = (eventData.hovered.Count > 0);
+                if (!hovering) { return; }
                 var newPos = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, Mathf.InverseLerp(-1, 1, Mathf.Clamp(eventData.position.x, -1f, 1f)));
 
                 var seekerPos = _songSeeker.PlaybackPosition;
