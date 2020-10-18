@@ -61,7 +61,8 @@ namespace PracticePlugin
             _seekBackg = new GameObject("Background").AddComponent<ImageView>();
             rectTransform = _seekBackg.rectTransform;
             rectTransform.SetParent(transform, false);
-            rectTransform.sizeDelta = SeekBarSize;
+            rectTransform.sizeDelta = SeekBarSize + new Vector2(0, 7);
+            rectTransform.anchoredPosition = new Vector2(0, -1);
             _seekBackg.sprite = sprite;
             _seekBackg.type = Image.Type.Simple;
             _seekBackg.color = BackgroundColor;
@@ -180,12 +181,10 @@ namespace PracticePlugin
         public void OnDrag(PointerEventData eventData)
         {
             Debug.Log(eventData.position);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position,
-                _mainCamera, out var pos);
-            Debug.Log(eventData.position);
-            var posX = pos.x + HalfSeekBarSize;
+
+            var posX = Mathf.Clamp(eventData.position.x, -1f, 1f);
             Debug.Log(posX);
-            PlaybackPosition = Mathf.InverseLerp(0, SeekBarSize.x, posX);
+            PlaybackPosition = Mathf.InverseLerp(-1, 1, posX);
             Debug.Log(PlaybackPosition);
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);

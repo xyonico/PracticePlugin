@@ -58,8 +58,18 @@ namespace PracticePlugin
             var tex = Texture2D.whiteTexture;
             var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f, 100, 1);
 
+            var bg = new GameObject("Background").AddComponent<ImageView>();
+            var rectTransform = bg.rectTransform;
+            rectTransform.SetParent(transform, false);
+            rectTransform.sizeDelta = SongSeeker.SeekBarSize + new Vector2(0, 4);
+            rectTransform.anchoredPosition = new Vector2(0, -1);
+            bg.sprite = sprite;
+            bg.type = Image.Type.Simple;
+            bg.color = new Color(0, 0, 0, 0);
+            bg.material = Utilities.ImageResources.NoGlowMat;
+
             _lineDuration = new GameObject("Line Duration").AddComponent<ImageView>();
-            var rectTransform = _lineDuration.rectTransform;
+            rectTransform = _lineDuration.rectTransform;
             rectTransform.SetParent(transform, false);
             rectTransform.anchorMin = Vector2.up * 0.5f;
             rectTransform.anchorMax = Vector2.up * 0.5f;
@@ -129,11 +139,10 @@ namespace PracticePlugin
             if (_draggingCursor != null)
             {
                 var eventData = _draggingCursor.EventData;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position,
-                    _mainCamera, out var pos);
-                var newPos = pos.x + SongSeeker.HalfSeekBarSize;
 
-                var seekerPos = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, _songSeeker.PlaybackPosition);
+                var newPos = Mathf.Lerp(0, SongSeeker.SeekBarSize.x, Mathf.InverseLerp(-1, 1, Mathf.Clamp(eventData.position.x, -1f, 1f)));
+
+                var seekerPos = _songSeeker.PlaybackPosition;
                 if (Mathf.Abs(newPos - seekerPos) <= StickToSeekerCursorDistance)
                 {
                     newPos = seekerPos;
