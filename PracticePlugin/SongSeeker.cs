@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using HMUI;
 using BeatSaberMarkupLanguage;
+using IPA.Logging;
+using BS_Utils.Utilities;
 
 namespace PracticePlugin
 {
@@ -177,11 +179,14 @@ namespace PracticePlugin
 
         public void OnDrag(PointerEventData eventData)
         {
+            Debug.Log(eventData.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(transform as RectTransform, eventData.position,
                 _mainCamera, out var pos);
+            Debug.Log(eventData.position);
             var posX = pos.x + HalfSeekBarSize;
+            Debug.Log(posX);
             PlaybackPosition = Mathf.InverseLerp(0, SeekBarSize.x, posX);
-
+            Debug.Log(PlaybackPosition);
             CheckLooperCursorStick();
             UpdateCurrentTimeText(PlaybackPosition);
         }

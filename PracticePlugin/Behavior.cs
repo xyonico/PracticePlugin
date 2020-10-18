@@ -11,8 +11,8 @@ namespace PracticePlugin
 
         void Update()
         {
-            if (Plugin._uiElementsCreator == null || Plugin._uiElementsCreator.SongSeeker == null) return;
-            Plugin._uiElementsCreator.SongSeeker.OnUpdate();
+            if (Plugin._uiElementsCreator == null || UIElementsCreator.SongSeeker == null) return;
+            UIElementsCreator.SongSeeker.OnUpdate();
         }
     }
 }

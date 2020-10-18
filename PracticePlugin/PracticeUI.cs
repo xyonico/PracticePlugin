@@ -10,7 +10,7 @@ namespace PracticePlugin
 {
     public class PracticeUI : NotifiableSingleton<PracticeUI>
     {
-        private float _speed;
+        private float _speed = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.practiceSettings.songSpeedMul;
         [UIValue("speed")]
         public float speed
         {
@@ -24,8 +24,9 @@ namespace PracticePlugin
         void SetSpeed(float value)
         {
             speed = value;
+            Plugin.TimeScale = value;
         }
-        private float _njs;
+        private float _njs = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpMovementSpeed;
         [UIValue("njs")]
         public float njs
         {
@@ -39,8 +40,9 @@ namespace PracticePlugin
         void SetNjs(float value)
         {
             njs = value;
+            UIElementsCreator.NjsController_ValueChangedEvent(value);
         }
-        private float _offset;
+        private float _offset = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpStartBeatOffset;
         [UIValue("offset")]
         public float offset
         {
@@ -54,6 +56,7 @@ namespace PracticePlugin
         void SetSpawnOffset(float value)
         {
             offset = value;
+            UIElementsCreator.SpawnOffsetController_ValueChangedEvent(value);
         }
 
         [UIAction("speedFormatter")]
