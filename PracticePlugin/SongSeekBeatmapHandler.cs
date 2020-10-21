@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BS_Utils.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -105,7 +106,13 @@ namespace PracticePlugin
             }
 
             _beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
-            _beatmapObjectManager.DissolveAllObjects();
+          //  _beatmapObjectManager.DissolveAllObjects();
+            var notes = Resources.FindObjectsOfTypeAll<NoteController>().Where(x => x.gameObject.activeInHierarchy);
+            var walls = Resources.FindObjectsOfTypeAll<ObstacleController>().Where(x => x.gameObject.activeInHierarchy);
+            foreach (var note in notes)
+                _beatmapObjectManager.InvokeMethod("Despawn", note);
+            foreach (var wall in walls)
+                _beatmapObjectManager.InvokeMethod("Despawn", wall);
             /*
             var notesA = _notePool.activeItems.ToList();
             foreach (var noteA in notesA)
