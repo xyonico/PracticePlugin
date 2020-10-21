@@ -164,12 +164,6 @@ namespace PracticePlugin
 
         public void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            if (arg0.name == "MenuCore")
-            {
-
-            }
-
-
 
         }
 
@@ -197,7 +191,7 @@ namespace PracticePlugin
             {
 
                 _levelData = BS_Utils.Plugin.LevelData;
-                if (!_levelData.IsSet == false) return;
+                if (_levelData.IsSet == false) return;
                 BS_Utils.Plugin.LevelDidFinishEvent -= MainGameSceneSetupDataOnDidFinishEvent;
                 BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
 
