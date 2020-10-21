@@ -21,6 +21,7 @@ namespace PracticePlugin
             set
             {
                 _speed = value;
+           //     Plugin.TimeScale = PracticeUI.instance.speed;
             }
         }
         [UIAction("setSpeed")]
