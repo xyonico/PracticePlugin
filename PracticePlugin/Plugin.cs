@@ -36,9 +36,9 @@ namespace PracticePlugin
 
         public string failTime { get; private set; }
         internal bool showFailTextNext { get; set; }
- //       public static GameObject SpeedSettingsObject { get; private set; }
- //       public static GameObject NjsSettingsObject { get; private set; }
- //       public static GameObject SpawnOffsetSettingsObject { get; private set; }
+        //       public static GameObject SpeedSettingsObject { get; private set; }
+        //       public static GameObject NjsSettingsObject { get; private set; }
+        //       public static GameObject SpawnOffsetSettingsObject { get; private set; }
         internal static bool startWithFullEnergy = false;
         internal static bool disablePitchCorrection = false;
         internal static bool adjustNJSWithSpeed = false;
@@ -55,7 +55,7 @@ namespace PracticePlugin
                     AudioTimeSync.songTime, initData.songTimeOffset, _timeScale);
                 AudioTimeSync.SetPrivateField("_initData", newInitData);
                 //Chipmunk Removal as per base game
-                if(!disablePitchCorrection)
+                if (!disablePitchCorrection)
                 {
                     if (_timeScale == 1f)
                         _mixer.musicPitch = 1;
@@ -67,7 +67,7 @@ namespace PracticePlugin
                     _mixer.musicPitch = 1f;
                 }
                 ResetTimeSync(AudioTimeSync, _timeScale, newInitData);
-             //   AudioTimeSync.StartSong();
+                //   AudioTimeSync.StartSong();
 
 
                 return;
@@ -94,16 +94,16 @@ namespace PracticePlugin
                 }
                 if (AudioTimeSync != null)
                 {
-               //     AudioTimeSync.SetPrivateField("_timeScale", _timeScale); // = _timeScale;
-                                                                             //     AudioTimeSync.Init(_songAudio.clip, _songAudio.time, 
-                                                                             //           AudioTimeSync.GetPrivateField<float>("_songTimeOffset") - AudioTimeSync.GetPrivateField<FloatSO>("_audioLatency").value, _timeScale);
+                    //     AudioTimeSync.SetPrivateField("_timeScale", _timeScale); // = _timeScale;
+                    //     AudioTimeSync.Init(_songAudio.clip, _songAudio.time, 
+                    //           AudioTimeSync.GetPrivateField<float>("_songTimeOffset") - AudioTimeSync.GetPrivateField<FloatSO>("_audioLatency").value, _timeScale);
                     Console.WriteLine("Called TimeScale");
 
                     if (_songAudio != null)
                     {
                         _songAudio.pitch = _timeScale;
                     }
-           //         AudioTimeSync.forcedNoAudioSync = true;
+                    //         AudioTimeSync.forcedNoAudioSync = true;
                     //         float num = AudioTimeSync.GetPrivateField<float>("_startSongTime") + AudioTimeSync.GetPrivateField<float>("_songTimeOffset");
                     //     AudioTimeSync.SetPrivateField("_audioStartTimeOffsetSinceStart", (Time.timeSinceLevelLoad * _timeScale) - num);
                     //   AudioTimeSync.SetPrivateField("_fixingAudioSyncError", false);
@@ -159,7 +159,7 @@ namespace PracticePlugin
             adjustNJSWithSpeed = Config.GetBool("PracticePlugin", "Adjust NJS With Speed", false, true);
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            
+
         }
 
         public void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -196,28 +196,25 @@ namespace PracticePlugin
             else if (newScene.name == GameSceneName)
             {
 
-
-                if (_levelData == null)
-                {
-                    _levelData = BS_Utils.Plugin.LevelData;
-                    if (!_levelData.IsSet == false) return;
-                    BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
-                }
+                _levelData = BS_Utils.Plugin.LevelData;
+                if (!_levelData.IsSet == false) return;
+                BS_Utils.Plugin.LevelDidFinishEvent -= MainGameSceneSetupDataOnDidFinishEvent;
+                BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
 
 
                 if (_lastLevelId != _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID &&
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
                     PlayingNewSong = true;
-                   // TimeScale = 1;
-                   _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
+                    // TimeScale = 1;
+                    _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 }
                 else
                 {
                     PlayingNewSong = false;
                 }
 
-                
+
                 _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
                 _mixer = Resources.FindObjectsOfTypeAll<AudioManagerSO>().LastOrDefault();
                 AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().LastOrDefault();
@@ -238,7 +235,7 @@ namespace PracticePlugin
                         _timeScale = _levelData.GameplayCoreSceneSetupData.gameplayModifiers.songSpeedMul;
                     SharedCoroutineStarter.instance.StartCoroutine(DelayedSetup());
                 }
-                
+
             }
         }
 
@@ -250,7 +247,7 @@ namespace PracticePlugin
                 if (failText == null)
                     failText = BeatSaberMarkupLanguage.BeatSaberUI.CreateText(resultsViewController.rectTransform, failTime, new Vector2(15f, -35f));
                 else
-                   failText.text = failTime;
+                    failText.text = failTime;
                 failText.richText = true;
             }
             else
@@ -282,20 +279,20 @@ namespace PracticePlugin
 
                 BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, PracticeUI.instance);
                 GameObject uiObj = new GameObject("PracticePlugin Seeker UI", typeof(RectTransform));
-                
+
                 (uiObj.transform as RectTransform).anchorMin = new Vector2(0, 0);
                 (uiObj.transform as RectTransform).anchorMax = new Vector2(1, 1);
                 (uiObj.transform as RectTransform).sizeDelta = new Vector2(0, 0);
 
                 _uiElementsCreator = uiObj.AddComponent<UIElementsCreator>();
                 _uiElementsCreator.Init();
-                
+
                 uiObj.transform.SetParent(canvas, false);
 
                 uiObj.transform.localScale = new Vector3(1, 1, 1);
                 uiObj.transform.localPosition = new Vector3(0f, -3f, 0f);
-                
-                 new GameObject("Practice Plugin Behavior").AddComponent<Behavior>();
+
+                new GameObject("Practice Plugin Behavior").AddComponent<Behavior>();
                 if (startWithFullEnergy)
                 {
                     GameEnergyCounter energyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
@@ -416,11 +413,11 @@ namespace PracticePlugin
 
             float bpm = _spawnController.GetPrivateField<VariableBpmProcessor>("_variableBpmProcessor").currentBpm;
 
-            
+
             if (adjustNJSWithSpeed)
             {
                 float newNJS = njs * (1 / TimeScale);
-                njs = newNJS; 
+                njs = newNJS;
             }
 
 
