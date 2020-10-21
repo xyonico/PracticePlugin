@@ -106,13 +106,16 @@ namespace PracticePlugin
             }
 
             _beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
-          //  _beatmapObjectManager.DissolveAllObjects();
-            var notes = Resources.FindObjectsOfTypeAll<NoteController>().Where(x => x.gameObject.activeInHierarchy);
-            var walls = Resources.FindObjectsOfTypeAll<ObstacleController>().Where(x => x.gameObject.activeInHierarchy);
-            foreach (var note in notes)
-                _beatmapObjectManager.InvokeMethod("Despawn", note);
-            foreach (var wall in walls)
-                _beatmapObjectManager.InvokeMethod("Despawn", wall);
+            //  _beatmapObjectManager.DissolveAllObjects();
+            var notes = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+            var bombs = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
+            var walls = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
+            foreach (var note in notes.activeItems)
+                note.Dissolve(0f);
+            foreach (var bomb in bombs.activeItems)
+                bomb.Dissolve(0f);
+            foreach (var wall in walls.activeItems)
+                wall.Dissolve(0f);
             /*
             var notesA = _notePool.activeItems.ToList();
             foreach (var noteA in notesA)

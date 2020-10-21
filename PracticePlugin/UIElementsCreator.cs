@@ -66,7 +66,6 @@ namespace PracticePlugin
             {
                 ValueChangedEvent(_newTimeScale);
             }
-            Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
             if(SongSeeker._songAudioSource.time > 0)
             {
                 SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;

@@ -29,7 +29,10 @@ namespace PracticePlugin
         {
             speed = value;
         }
-        private float _njs = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpMovementSpeed;
+        private float _njs = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpMovementSpeed != 0?
+            BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpMovementSpeed : 
+            BeatmapDifficultyMethods.NoteJumpMovementSpeed(BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.difficulty);
+
         [UIValue("njs")]
         public float njs
         {
