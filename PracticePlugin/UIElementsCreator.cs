@@ -68,6 +68,7 @@ namespace PracticePlugin
                 ValueChangedEvent(_newTimeScale);
             }
             Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
+            Plugin.TimeScale = PracticeUI.instance.speed;
             //      Destroy(_speedSettings);
         }
 

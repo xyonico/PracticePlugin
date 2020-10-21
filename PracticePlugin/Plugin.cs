@@ -49,6 +49,7 @@ namespace PracticePlugin
             {
                 _timeScale = value;
                 if (!AudioTimeSync) return;
+                if (!_spawnController) return;
                 AudioTimeSyncController.InitData initData = AudioTimeSync.GetPrivateField<AudioTimeSyncController.InitData>("_initData");
                 AudioTimeSyncController.InitData newInitData = new AudioTimeSyncController.InitData(initData.audioClip,
                     AudioTimeSync.songTime, initData.songTimeOffset, _timeScale);
@@ -65,8 +66,8 @@ namespace PracticePlugin
                 {
                     _mixer.musicPitch = 1f;
                 }
-
-                AudioTimeSync.StartSong();
+                ResetTimeSync(AudioTimeSync, _timeScale, newInitData);
+             //   AudioTimeSync.StartSong();
 
 
                 return;
@@ -114,6 +115,17 @@ namespace PracticePlugin
 
 
             }
+        }
+        public static void ResetTimeSync(AudioTimeSyncController timeSync, float newTimeScale, AudioTimeSyncController.InitData newData)
+        {
+
+            timeSync.SetPrivateField("_timeScale", newTimeScale);
+            timeSync.SetPrivateField("_startSongTime", timeSync.songTime);
+            timeSync.SetPrivateField("_audioStartTimeOffsetSinceStart",
+                timeSync.GetProperty<float>("timeSinceStart") - (timeSync.songTime + newData.songTimeOffset));
+            timeSync.SetPrivateField("_fixingAudioSyncError", false);
+            timeSync.SetPrivateField("_playbackLoopIndex", 0);
+            timeSync.audioSource.pitch = newTimeScale;
         }
 
         private static float _timeScale = 1;
@@ -192,11 +204,7 @@ namespace PracticePlugin
                     BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
                 }
 
-                if (_spawnController == null)
-                {
-                    _spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault();
 
-                }
                 if (_lastLevelId != _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID &&
                     !string.IsNullOrEmpty(_lastLevelId))
                 {
@@ -211,11 +219,11 @@ namespace PracticePlugin
 
                 
                 _lastLevelId = _levelData.GameplayCoreSceneSetupData.difficultyBeatmap.level.levelID;
-                _mixer = Resources.FindObjectsOfTypeAll<AudioManagerSO>().FirstOrDefault();
-                AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
+                _mixer = Resources.FindObjectsOfTypeAll<AudioManagerSO>().LastOrDefault();
+                AudioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().LastOrDefault();
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
-                PracticeMode = (_levelData.Mode == BS_Utils.Gameplay.Mode.Standard && _levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel 
-                    && Resources.FindObjectsOfTypeAll<MissionLevelGameplayManager>().FirstOrDefault() == null);
+
+                PracticeMode = (_levelData.Mode == BS_Utils.Gameplay.Mode.Standard && _levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
 
 
                 if (!PracticeMode)
@@ -255,10 +263,16 @@ namespace PracticePlugin
 
         public System.Collections.IEnumerator DelayedSetup()
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
             try
             {
+                if (_spawnController == null)
+                {
+                    _spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().LastOrDefault();
+
+                }
                 Console.WriteLine("Atemmpting Practice Plugin UI");
+
                 var canvas = GameObject.Find("PauseMenu").transform.Find("Wrapper").transform.Find("MenuWrapper").transform.Find("Canvas");
 
                 if (canvas == null)
@@ -267,7 +281,6 @@ namespace PracticePlugin
                 }
 
                 BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, PracticeUI.instance);
-
                 GameObject uiObj = new GameObject("PracticePlugin Seeker UI", typeof(RectTransform));
                 
                 (uiObj.transform as RectTransform).anchorMin = new Vector2(0, 0);

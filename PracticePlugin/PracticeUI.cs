@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Attributes;
+using HMUI;
+
 namespace PracticePlugin
 {
     public class PracticeUI : NotifiableSingleton<PracticeUI>
     {
+        
         private float _speed = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.practiceSettings.songSpeedMul;
         [UIValue("speed")]
         public float speed
@@ -24,7 +27,6 @@ namespace PracticePlugin
         void SetSpeed(float value)
         {
             speed = value;
-            Plugin.TimeScale = value;
         }
         private float _njs = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.difficultyBeatmap.noteJumpMovementSpeed;
         [UIValue("njs")]
@@ -73,6 +75,13 @@ namespace PracticePlugin
         string offsetForValue(float value)
         {
             return value == UIElementsCreator.defaultOffset ? $"<u>{value.ToString("F2")}</u>" : $"{value.ToString("F2")}";
+        }
+
+        [UIAction("#post-parse")]
+        void PostParse()
+        {
+          if(gameObject.GetComponent<Touchable>() == null) 
+                gameObject.AddComponent<Touchable>();
         }
     }
 }

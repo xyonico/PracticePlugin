@@ -14,7 +14,7 @@ namespace PracticePlugin
                 if (_beatmapObjectCallbackController == null || _callbackList == null)
                 {
                     _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>()
-                        .FirstOrDefault();
+                        .LastOrDefault();
 
                     if (_beatmapObjectCallbackController != null)
                     {
@@ -30,13 +30,13 @@ namespace PracticePlugin
                     if (_beatmapObjectSpawnController == null)
                     {
                         _beatmapObjectSpawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>()
-                            .FirstOrDefault();
+                            .LastOrDefault();
 
                     }
 
                     if (_beatmapObjectManager == null)
                     {
-                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().FirstOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager") as BasicBeatmapObjectManager;
+                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().LastOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager") as BasicBeatmapObjectManager;
 
                         if (_beatmapObjectManager != null)
                         {
@@ -49,7 +49,7 @@ namespace PracticePlugin
                     if (_noteCutSoundEffectManager == null)
                     {
                         _noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>()
-                            .FirstOrDefault();
+                            .LastOrDefault();
                     }
                 }
 
