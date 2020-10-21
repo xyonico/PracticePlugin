@@ -51,14 +51,13 @@ namespace PracticePlugin
         {
             //  Plugin.AdjustNjsAndOffset();
             Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
-            SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
         }
 
         public static void NjsController_ValueChangedEvent(float njs)
         {
             //  Plugin.AdjustNjsAndOffset();
             Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
-            SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
+
         }
 
         private void OnDisable()
@@ -68,7 +67,13 @@ namespace PracticePlugin
                 ValueChangedEvent(_newTimeScale);
             }
             Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
-            Plugin.TimeScale = PracticeUI.instance.speed;
+            if(SongSeeker._songAudioSource.time > 0)
+            {
+                SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
+                SongSeeker.ApplyPlaybackPosition();
+                Plugin.TimeScale = PracticeUI.instance.speed;
+            }
+
             //      Destroy(_speedSettings);
         }
 
