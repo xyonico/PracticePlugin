@@ -200,7 +200,7 @@ namespace PracticePlugin
                 if (_levelData == null)
                 {
                     _levelData = BS_Utils.Plugin.LevelData;
-                    if (_levelData == null) return;
+                    if (!_levelData.IsSet == false) return;
                     BS_Utils.Plugin.LevelDidFinishEvent += MainGameSceneSetupDataOnDidFinishEvent;
                 }
 
