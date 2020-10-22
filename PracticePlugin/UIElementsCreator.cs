@@ -12,7 +12,7 @@ namespace PracticePlugin
         public static SongSeeker SongSeeker { get; private set; }
         internal static float defaultNJS;
         internal static float defaultOffset;
-
+        internal static PracticeUI practiceUI;
         internal static float _newTimeScale { get; private set; } = 1f;
 
         public void Init()
@@ -50,13 +50,13 @@ namespace PracticePlugin
         public static void SpawnOffsetController_ValueChangedEvent(float offset)
         {
             //  Plugin.AdjustNjsAndOffset();
-            Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
+            Plugin.UpdateSpawnMovementData(practiceUI.njs, practiceUI.offset);
         }
 
         public static void NjsController_ValueChangedEvent(float njs)
         {
             //  Plugin.AdjustNjsAndOffset();
-            Plugin.UpdateSpawnMovementData(PracticeUI.instance.njs, PracticeUI.instance.offset);
+            Plugin.UpdateSpawnMovementData(practiceUI.njs, practiceUI.offset);
 
         }
 
@@ -70,7 +70,7 @@ namespace PracticePlugin
             {
                 SongSeeker._startTimeSamples = SongSeeker._songAudioSource.timeSamples - 1;
                 SongSeeker.ApplyPlaybackPosition();
-                Plugin.TimeScale = PracticeUI.instance.speed;
+                Plugin.TimeScale = practiceUI.speed;
             }
 
             //      Destroy(_speedSettings);

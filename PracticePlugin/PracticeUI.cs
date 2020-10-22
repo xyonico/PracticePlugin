@@ -7,10 +7,11 @@ using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Attributes;
 using HMUI;
+using UnityEngine;
 
 namespace PracticePlugin
 {
-    public class PracticeUI : NotifiableSingleton<PracticeUI>
+    public class PracticeUI : MonoBehaviour
     {
         
         private float _speed = BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.practiceSettings.songSpeedMul;

@@ -271,7 +271,7 @@ namespace PracticePlugin
                     Console.WriteLine("Canvas Null");
                 }
 
-                BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, PracticeUI.instance);
+               
                 GameObject uiObj = new GameObject("PracticePlugin Seeker UI", typeof(RectTransform));
 
                 (uiObj.transform as RectTransform).anchorMin = new Vector2(0, 0);
@@ -279,6 +279,9 @@ namespace PracticePlugin
                 (uiObj.transform as RectTransform).sizeDelta = new Vector2(0, 0);
 
                 _uiElementsCreator = uiObj.AddComponent<UIElementsCreator>();
+                var practiceUI = new GameObject("PracticePlugin Adjustment UI").AddComponent<PracticeUI>();
+                UIElementsCreator.practiceUI = practiceUI;
+                BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PracticePlugin.PracticeUI.bsml"), canvas.gameObject, practiceUI);
                 _uiElementsCreator.Init();
 
                 uiObj.transform.SetParent(canvas, false);
