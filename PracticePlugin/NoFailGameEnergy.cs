@@ -66,12 +66,12 @@ namespace PracticePlugin
                 var waitTime = Time.realtimeSinceStartup + 3;
                 while (Time.realtimeSinceStartup < waitTime)
                 {
-                    _gameEnergyCounter.AddEnergy(-1);
+                    _gameEnergyCounter.ProcessEnergyChange(-1);
                     yield return null;
                 }
                 _levelFailedGameObject.SetActive(false);
 
-                _gameEnergyCounter.AddEnergy(0.5f);
+                _gameEnergyCounter.ProcessEnergyChange(0.5f);
                 _isFailedVisible = false;
                 if (limitLevelFail == true)
                     hasFailed = true;

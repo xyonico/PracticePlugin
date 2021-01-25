@@ -294,7 +294,7 @@ namespace PracticePlugin
                 {
                     GameEnergyCounter energyCounter = Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
                     if (energyCounter != null)
-                        energyCounter.AddEnergy(1 - energyCounter.energy);
+                        energyCounter.ProcessEnergyChange(1 - energyCounter.energy);
                 }
 
             }
