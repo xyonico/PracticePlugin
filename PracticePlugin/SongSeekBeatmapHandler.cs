@@ -8,7 +8,7 @@ namespace PracticePlugin
 {
     public static class SongSeekBeatmapHandler
     {
-        private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> CallbackList
+        private static List<BeatmapObjectCallbackData> CallbackList
         {
             get
             {
@@ -21,7 +21,7 @@ namespace PracticePlugin
                     {
                         _callbackList =
                             _beatmapObjectCallbackController
-                                .GetPrivateField<List<BeatmapObjectCallbackController.BeatmapObjectCallbackData>>(
+                                .GetPrivateField<List<BeatmapObjectCallbackData>>(
                                     "_beatmapObjectCallbackData");
 
                         _beatmapData = _beatmapObjectCallbackController
@@ -41,10 +41,10 @@ namespace PracticePlugin
 
                         if (_beatmapObjectManager != null)
                         {
-                            _notePool = _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
-                            _bombNotePool = _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
+                            _notePool = _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+                            _bombNotePool = _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
                             _obstaclePool =
-                                _beatmapObjectManager.GetPrivateField<MonoMemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
+                                _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
                         }
                     }
                     if (_noteCutSoundEffectManager == null)
@@ -58,15 +58,15 @@ namespace PracticePlugin
             }
         }
 
-        private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> _callbackList;
+        private static List<BeatmapObjectCallbackData> _callbackList;
         private static BeatmapObjectCallbackController _beatmapObjectCallbackController;
         private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
         private static BasicBeatmapObjectManager _beatmapObjectManager;
         private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
 
-        private static MonoMemoryPoolContainer<GameNoteController> _notePool;
-        private static MonoMemoryPoolContainer<BombNoteController> _bombNotePool;
-        private static MonoMemoryPoolContainer<ObstacleController> _obstaclePool;
+        private static MemoryPoolContainer<GameNoteController> _notePool;
+        private static MemoryPoolContainer<BombNoteController> _bombNotePool;
+        private static MemoryPoolContainer<ObstacleController> _obstaclePool;
 
         private static BeatmapData _beatmapData;
 
@@ -107,15 +107,39 @@ namespace PracticePlugin
 
             _beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
             //  _beatmapObjectManager.DissolveAllObjects();
-            var notes = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
-            var bombs = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
-            var walls = _beatmapObjectManager.GetField<MonoMemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
+            var notes = _beatmapObjectManager.GetField<MemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+            var bombs = _beatmapObjectManager.GetField<MemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
+            var walls = _beatmapObjectManager.GetField<MemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
             foreach (var note in notes.activeItems)
+            {
+                if (note == null) continue;
+                note.hide = false;
+                note.pause = false;
+                note.enabled = true;
+                note.gameObject.SetActive(true);
                 note.Dissolve(0f);
+            //    _beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", note as NoteController);
+            }
             foreach (var bomb in bombs.activeItems)
+            {
+                if (bomb == null) continue;
+                bomb.hide = false;
+                bomb.pause = false;
+                bomb.enabled = true;
+                bomb.gameObject.SetActive(true);
                 bomb.Dissolve(0f);
+                //    _beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", bomb as NoteController);
+            }
             foreach (var wall in walls.activeItems)
+            {
+                if (wall == null) continue;
+                wall.hide = false;
+                wall.pause = false;
+                wall.enabled = true;
+                wall.gameObject.SetActive(true);
                 wall.Dissolve(0f);
+                //_beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", wall);
+            }
             /*
             var notesA = _notePool.activeItems.ToList();
             foreach (var noteA in notesA)

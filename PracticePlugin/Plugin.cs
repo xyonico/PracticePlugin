@@ -215,7 +215,7 @@ namespace PracticePlugin
                 _songAudio = AudioTimeSync.GetPrivateField<AudioSource>("_audioSource");
 
                 PracticeMode = (_levelData.Mode == BS_Utils.Gameplay.Mode.Standard && _levelData.GameplayCoreSceneSetupData.practiceSettings != null && !BS_Utils.Gameplay.Gamemode.IsIsolatedLevel);
-
+                
 
                 if (!PracticeMode)
                 {
