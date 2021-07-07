@@ -1,140 +1,176 @@
-﻿using System;
+﻿using BS_Utils.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace PracticePlugin
 {
-	public static class SongSeekBeatmapHandler
-	{	
-		private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> CallbackList
-		{
-			get
-			{
-				if (_beatmapObjectCallbackController == null || _callbackList == null)
-				{
-					_beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>()
-						.FirstOrDefault();
+    public static class SongSeekBeatmapHandler
+    {
+        private static List<BeatmapObjectCallbackData> CallbackList
+        {
+            get
+            {
+                if (_beatmapObjectCallbackController == null || _callbackList == null)
+                {
+                    _beatmapObjectCallbackController = Resources.FindObjectsOfTypeAll<BeatmapObjectCallbackController>()
+                        .LastOrDefault();
 
-					if (_beatmapObjectCallbackController != null)
-					{
-						_callbackList =
-							_beatmapObjectCallbackController
-								.GetPrivateField<List<BeatmapObjectCallbackController.BeatmapObjectCallbackData>>(
-									"_beatmapObjectCallbackData");
-						
-						_beatmapData = _beatmapObjectCallbackController
-							.GetPrivateField<BeatmapDataModel>("_beatmapDataModel").beatmapData;
-					}
+                    if (_beatmapObjectCallbackController != null)
+                    {
+                        _callbackList =
+                            _beatmapObjectCallbackController
+                                .GetPrivateField<List<BeatmapObjectCallbackData>>(
+                                    "_beatmapObjectCallbackData");
 
-					if (_beatmapObjectSpawnController == null)
-					{
-						_beatmapObjectSpawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>()
-							.FirstOrDefault();
-						if (_beatmapObjectSpawnController != null)
-						{
-							_noteAPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteAPool");
-							_noteBPool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_noteBPool");
-							_bombNotePool = _beatmapObjectSpawnController.GetPrivateField<NoteController.Pool>("_bombNotePool");
-							_fullHeightObstaclePool =
-								_beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_fullHeightObstaclePool");
-							_topObstaclePool = _beatmapObjectSpawnController.GetPrivateField<ObstacleController.Pool>("_topObstaclePool");
-						}
-					}
+                        _beatmapData = _beatmapObjectCallbackController
+                            .GetPrivateField<BeatmapData>("_beatmapData");
+                    }
 
-					if (_noteCutSoundEffectManager == null)
-					{
-						_noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>()
-							.FirstOrDefault();
-					}
-				}
+                    if (_beatmapObjectSpawnController == null)
+                    {
+                        _beatmapObjectSpawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>()
+                            .LastOrDefault();
 
-				return _callbackList;
-			}
-		}
+                    }
 
-		private static List<BeatmapObjectCallbackController.BeatmapObjectCallbackData> _callbackList;
-		private static BeatmapObjectCallbackController _beatmapObjectCallbackController;
-		private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
-		private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
+                    if (_beatmapObjectManager == null)
+                    {
+                        _beatmapObjectManager = Resources.FindObjectsOfTypeAll<BeatmapObjectExecutionRatingsRecorder>().LastOrDefault().GetPrivateField<BeatmapObjectManager>("_beatmapObjectManager") as BasicBeatmapObjectManager;
 
-		private static NoteController.Pool _noteAPool;
-		private static NoteController.Pool _noteBPool;
-		private static NoteController.Pool _bombNotePool;
-		private static ObstacleController.Pool _fullHeightObstaclePool;
-		private static ObstacleController.Pool _topObstaclePool;
-		
-		private static BeatmapData _beatmapData;
+                        if (_beatmapObjectManager != null)
+                        {
+                            _notePool = _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+                            _bombNotePool = _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
+                            _obstaclePool =
+                                _beatmapObjectManager.GetPrivateField<MemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
+                        }
+                    }
+                    if (_noteCutSoundEffectManager == null)
+                    {
+                        _noteCutSoundEffectManager = Resources.FindObjectsOfTypeAll<NoteCutSoundEffectManager>()
+                            .LastOrDefault();
+                    }
+                }
 
-		public static void OnSongTimeChanged(float newSongTime, float aheadTime)
-		{
-			foreach (var callbackData in CallbackList)
-			{
-				for (var i = 0; i < _beatmapData.beatmapLinesData.Length; i++)
-				{
-					callbackData.nextObjectIndexInLine[i] = 0;
-					while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Length)
-					{
-						var beatmapObjectData = _beatmapData.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
-						if (beatmapObjectData.time - aheadTime >= newSongTime)
-						{
-							break;
-						}
-						
-						callbackData.nextObjectIndexInLine[i]++;
-					}
-				}
-			}
+                return _callbackList;
+            }
+        }
 
-			var newNextEventIndex = 0;
-			
-			while (newNextEventIndex < _beatmapData.beatmapEventData.Length)
-			{
-				var beatmapEventData = _beatmapData.beatmapEventData[newNextEventIndex];
-				if (beatmapEventData.time >= newSongTime)
-				{
-					break;
-				}
-				
-				newNextEventIndex++;
-			}
-			
-			_beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
+        private static List<BeatmapObjectCallbackData> _callbackList;
+        private static BeatmapObjectCallbackController _beatmapObjectCallbackController;
+        private static BeatmapObjectSpawnController _beatmapObjectSpawnController;
+        private static BasicBeatmapObjectManager _beatmapObjectManager;
+        private static NoteCutSoundEffectManager _noteCutSoundEffectManager;
 
-			var notesA = _noteAPool.activeItems.ToList();
-			foreach (var noteA in notesA)
-			{
-				_beatmapObjectSpawnController.Despawn(noteA);
-			}
-			
-			var notesB = _noteBPool.activeItems.ToList();
-			foreach (var noteB in notesB)
-			{
-				_beatmapObjectSpawnController.Despawn(noteB);
-			}
-			
-			var bombs = _bombNotePool.activeItems.ToList();
-			foreach (var bomb in bombs)
-			{
-				_beatmapObjectSpawnController.Despawn(bomb);
-			}
-			
-			var fullHeights = _fullHeightObstaclePool.activeItems.ToList();
-			foreach (var fullHeight in fullHeights)
-			{
-				_beatmapObjectSpawnController.Despawn(fullHeight);
-			}
-			
-			var tops = _topObstaclePool.activeItems.ToList();
-			foreach (var top in tops)
-			{
-				_beatmapObjectSpawnController.Despawn(top);
-			}
-			
-			Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
-			Plugin.AudioTimeSync.GetPrivateField<FloatSO>("_songTime").value = newSongTime;
-			_noteCutSoundEffectManager.SetPrivateField("_prevNoteATime", -1);
-			_noteCutSoundEffectManager.SetPrivateField("_prevNoteBTime", -1);
-		}
-	}
+        private static MemoryPoolContainer<GameNoteController> _notePool;
+        private static MemoryPoolContainer<BombNoteController> _bombNotePool;
+        private static MemoryPoolContainer<ObstacleController> _obstaclePool;
+
+        private static BeatmapData _beatmapData;
+
+        public static void OnSongTimeChanged(float newSongTime, float aheadTime)
+        {
+            if (_beatmapObjectCallbackController)
+                _beatmapData = _beatmapObjectCallbackController.GetPrivateField<BeatmapData>("_beatmapData");
+            foreach (var callbackData in CallbackList)
+            {
+                for (var i = 0; i < _beatmapData.beatmapLinesData.Count; i++)
+                {
+                    callbackData.nextObjectIndexInLine[i] = 0;
+                    while (callbackData.nextObjectIndexInLine[i] < _beatmapData.beatmapLinesData[i].beatmapObjectsData.Count)
+                    {
+                        var beatmapObjectData = _beatmapData.beatmapLinesData[i].beatmapObjectsData[callbackData.nextObjectIndexInLine[i]];
+                        if (beatmapObjectData.time - aheadTime >= newSongTime)
+                        {
+                            break;
+                        }
+
+                        callbackData.nextObjectIndexInLine[i]++;
+                    }
+                }
+            }
+
+            var newNextEventIndex = 0;
+
+            while (newNextEventIndex < _beatmapData.beatmapEventsData.Count)
+            {
+                var beatmapEventData = _beatmapData.beatmapEventsData[newNextEventIndex];
+                if (beatmapEventData.time >= newSongTime)
+                {
+                    break;
+                }
+
+                newNextEventIndex++;
+            }
+
+            _beatmapObjectCallbackController.SetPrivateField("_nextEventIndex", newNextEventIndex);
+            //  _beatmapObjectManager.DissolveAllObjects();
+            var notes = _beatmapObjectManager.GetField<MemoryPoolContainer<GameNoteController>>("_gameNotePoolContainer");
+            var bombs = _beatmapObjectManager.GetField<MemoryPoolContainer<BombNoteController>>("_bombNotePoolContainer");
+            var walls = _beatmapObjectManager.GetField<MemoryPoolContainer<ObstacleController>>("_obstaclePoolContainer");
+            foreach (var note in notes.activeItems)
+            {
+                if (note == null) continue;
+                note.hide = false;
+                note.pause = false;
+                note.enabled = true;
+                note.gameObject.SetActive(true);
+                note.Dissolve(0f);
+            //    _beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", note as NoteController);
+            }
+            foreach (var bomb in bombs.activeItems)
+            {
+                if (bomb == null) continue;
+                bomb.hide = false;
+                bomb.pause = false;
+                bomb.enabled = true;
+                bomb.gameObject.SetActive(true);
+                bomb.Dissolve(0f);
+                //    _beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", bomb as NoteController);
+            }
+            foreach (var wall in walls.activeItems)
+            {
+                if (wall == null) continue;
+                wall.hide = false;
+                wall.pause = false;
+                wall.enabled = true;
+                wall.gameObject.SetActive(true);
+                wall.Dissolve(0f);
+                //_beatmapObjectManager.InvokeMethod<BeatmapObjectManager>("Despawn", wall);
+            }
+            /*
+            var notesA = _notePool.activeItems.ToList();
+            foreach (var noteA in notesA)
+            {
+                //               Console.WriteLine("Despawning, Length: " + notesA.Count);
+                _beatmapObjectManager.DissolveAllObjects(noteA);
+            }
+            
+            var notesB = _noteBPool.activeItems.ToList();
+            foreach (var noteB in notesB)
+            {
+                _beatmapObjectManager.Despawn(noteB);
+            }
+
+            var bombs = _bombNotePool.activeItems.ToList();
+            foreach (var bomb in bombs)
+            {
+                _beatmapObjectManager.Despawn(bomb);
+            }
+
+            var obstacles = _obstaclePool.activeItems.ToList();
+            foreach (var obstacle in obstacles)
+            {
+                _beatmapObjectManager.Despawn(obstacle);
+            }
+            */
+
+            Plugin.AudioTimeSync.SetPrivateField("_prevAudioSamplePos", -1);
+            Plugin.AudioTimeSync.SetPrivateField("_songTime", newSongTime);
+            _noteCutSoundEffectManager.SetPrivateField("_prevNoteATime", -1);
+            _noteCutSoundEffectManager.SetPrivateField("_prevNoteBTime", -1);
+        }
+    }
 }
